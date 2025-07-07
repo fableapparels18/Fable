@@ -22,6 +22,14 @@ async function seedProducts() {
     seeded = true;
 }
 
+const handleDbError = (error: any, functionName: string) => {
+    if (error.message.includes('bad auth')) {
+        console.error(`MongoDB authentication failed in ${functionName}. Please double-check your MONGODB_URI in .env.local. Falling back to static data.`);
+    } else {
+        console.error(`Database error in ${functionName}: ${error.message}. Falling back to static data.`);
+    }
+};
+
 export async function getTrendingProducts(): Promise<Product[]> {
   if (!isDbConfigured) {
     return initialProducts.filter((p) => p.isTrending);
@@ -31,7 +39,7 @@ export async function getTrendingProducts(): Promise<Product[]> {
     const products = await ProductModel.find({ isTrending: true }).lean();
     return JSON.parse(JSON.stringify(products));
   } catch (error: any) {
-    console.error(`Database error in getTrendingProducts: ${error.message}. Falling back to static data. Please check your MONGODB_URI.`);
+    handleDbError(error, 'getTrendingProducts');
     return initialProducts.filter((p) => p.isTrending);
   }
 }
@@ -45,7 +53,7 @@ export async function getNewProducts(): Promise<Product[]> {
     const products = await ProductModel.find({ isNew: true }).lean();
     return JSON.parse(JSON.stringify(products));
   } catch (error: any) {
-    console.error(`Database error in getNewProducts: ${error.message}. Falling back to static data. Please check your MONGODB_URI.`);
+    handleDbError(error, 'getNewProducts');
     return initialProducts.filter((p) => p.isNew);
   }
 }
@@ -59,7 +67,7 @@ export async function getAllProducts(): Promise<Product[]> {
     const products = await ProductModel.find({}).lean();
     return JSON.parse(JSON.stringify(products));
   } catch (error: any) {
-    console.error(`Database error in getAllProducts: ${error.message}. Falling back to static data. Please check your MONGODB_URI.`);
+    handleDbError(error, 'getAllProducts');
     return initialProducts;
   }
 }
@@ -80,7 +88,7 @@ export async function getProductById(productId: string): Promise<Product | null>
     }
     return JSON.parse(JSON.stringify(product));
   } catch (error: any) {
-    console.error(`Database error in getProductById: ${error.message}.`);
+    handleDbError(error, `getProductById (ID: ${productId})`);
     // Fallback for demo purposes, in a real app you might not want this
     const product = initialProducts.find((p) => p._id === productId);
     return product || null;
