@@ -10,7 +10,7 @@ export async function middleware(request: NextRequest) {
   const tokenCookie = request.cookies.get('token');
   const token = tokenCookie?.value;
 
-  const protectedPaths = ['/profile', '/api/cart'];
+  const protectedPaths = ['/profile', '/cart', '/api/cart'];
 
   const isProtected = protectedPaths.some(path => pathname.startsWith(path));
 
@@ -36,5 +36,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/profile', '/api/cart/:path*'],
+  matcher: ['/profile', '/cart', '/api/cart/:path*'],
 };

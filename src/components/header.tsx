@@ -44,9 +44,11 @@ export function Header() {
               <span className="sr-only">Profile</span>
             </Link>
           </Button>
-          <Button variant="ghost" size="icon">
-            <ShoppingCart className="h-5 w-5" />
-            <span className="sr-only">Cart</span>
+          <Button variant="ghost" size="icon" asChild>
+            <Link href="/cart">
+              <ShoppingCart className="h-5 w-5" />
+              <span className="sr-only">Cart</span>
+            </Link>
           </Button>
         </div>
 
@@ -85,9 +87,11 @@ export function Header() {
                             <span>Profile</span>
                         </Link>
                     </Button>
-                    <Button variant="ghost" size="icon" className="w-auto px-2 justify-start gap-2">
-                        <ShoppingCart className="h-5 w-5" />
-                        <span>Cart</span>
+                    <Button variant="ghost" size="icon" className="w-auto px-2 justify-start gap-2" asChild>
+                         <Link href="/cart">
+                            <ShoppingCart className="h-5 w-5" />
+                            <span>Cart</span>
+                        </Link>
                     </Button>
                  </div>
                 </div>
