@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { DeleteProductButton } from './delete-product-button';
 
 export default async function AdminProductsPage() {
     const products: Product[] = await getAllProducts();
@@ -83,7 +84,7 @@ export default async function AdminProductsPage() {
                                             <DropdownMenuContent align="end">
                                                 <DropdownMenuLabel>Actions</DropdownMenuLabel>
                                                 <DropdownMenuItem>Edit</DropdownMenuItem>
-                                                <DropdownMenuItem className="text-destructive">Delete</DropdownMenuItem>
+                                                <DeleteProductButton productId={product._id} productName={product.name} />
                                             </DropdownMenuContent>
                                         </DropdownMenu>
                                     </TableCell>

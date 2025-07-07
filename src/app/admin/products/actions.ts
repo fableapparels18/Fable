@@ -29,3 +29,18 @@ export async function addProduct(data: ProductFormData) {
     revalidatePath('/');
     redirect('/admin/products');
 }
+
+export async function deleteProduct(productId: string) {
+    try {
+        await dbConnect();
+        await ProductModel.findByIdAndDelete(productId);
+    } catch (error) {
+        console.error('Failed to delete product:', error);
+        return {
+            message: 'Database Error: Failed to Delete Product.',
+        };
+    }
+
+    revalidatePath('/admin/products');
+    revalidatePath('/');
+}
