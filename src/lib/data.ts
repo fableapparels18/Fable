@@ -120,3 +120,19 @@ export async function getRecentCompletedOrders(): Promise<IOrder[]> {
         return [];
     }
 }
+
+
+export async function getRecentCancelledOrders(): Promise<IOrder[]> {
+     if (!isDbConfigured) {
+        return [];
+    }
+    try {
+        await dbConnect();
+        // Fetch last 30 cancelled orders
+        const orders = await OrderModel.find({ status: 'Cancelled' }).sort({ updatedAt: -1 }).limit(30).lean();
+        return JSON.parse(JSON.stringify(orders));
+    } catch (error: any) {
+        handleDbError(error, 'getRecentCancelledOrders');
+        return [];
+    }
+}

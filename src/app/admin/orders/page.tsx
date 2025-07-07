@@ -1,6 +1,6 @@
 import Image from 'next/image';
 import { format } from 'date-fns';
-import { getPendingOrders, getRecentCompletedOrders } from '@/lib/data';
+import { getPendingOrders, getRecentCompletedOrders, getRecentCancelledOrders } from '@/lib/data';
 import type { IOrder } from '@/models/Order';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -9,7 +9,7 @@ import { OrderActions } from './order-actions';
 import { Badge } from '@/components/ui/badge';
 
 
-function OrdersTable({ orders, isPending }: { orders: IOrder[], isPending?: boolean }) {
+function OrdersTable({ orders }: { orders: IOrder[] }) {
     if (orders.length === 0) {
         return <p className="text-muted-foreground text-center py-8">No orders found.</p>
     }
@@ -47,7 +47,14 @@ function OrdersTable({ orders, isPending }: { orders: IOrder[], isPending?: bool
                             </div>
                         </TableCell>
                         <TableCell className="text-right font-medium">${order.totalAmount.toFixed(2)}</TableCell>
-                        <TableCell><Badge variant={order.status === 'Pending' ? 'secondary' : 'outline'}>{order.status}</Badge></TableCell>
+                        <TableCell>
+                             <Badge variant={
+                                order.status === 'Cancelled' ? 'destructive' :
+                                order.status === 'Delivered' ? 'default' :
+                                order.status === 'Pending' ? 'secondary' :
+                                'outline' // For 'Out for Delivery'
+                            }>{order.status}</Badge>
+                        </TableCell>
                         <TableCell>
                             {(order.status === 'Pending' || order.status === 'Out for Delivery') && <OrderActions orderId={order._id.toString()} />}
                         </TableCell>
@@ -61,6 +68,7 @@ function OrdersTable({ orders, isPending }: { orders: IOrder[], isPending?: bool
 export default async function AdminOrdersPage() {
     const pendingOrders = await getPendingOrders();
     const completedOrders = await getRecentCompletedOrders();
+    const cancelledOrders = await getRecentCancelledOrders();
 
     return (
         <div className="flex flex-col gap-6">
@@ -70,9 +78,10 @@ export default async function AdminOrdersPage() {
             </header>
 
              <Tabs defaultValue="pending">
-                <TabsList>
+                <TabsList className="grid w-full grid-cols-3">
                     <TabsTrigger value="pending">Pending Orders</TabsTrigger>
                     <TabsTrigger value="completed">Completed Orders</TabsTrigger>
+                    <TabsTrigger value="cancelled">Cancelled Orders</TabsTrigger>
                 </TabsList>
                 <TabsContent value="pending">
                     <Card>
@@ -81,7 +90,7 @@ export default async function AdminOrdersPage() {
                             <CardDescription>These are orders that need to be processed.</CardDescription>
                         </CardHeader>
                         <CardContent>
-                            <OrdersTable orders={pendingOrders} isPending={true} />
+                            <OrdersTable orders={pendingOrders} />
                         </CardContent>
                     </Card>
                 </TabsContent>
@@ -93,6 +102,17 @@ export default async function AdminOrdersPage() {
                         </CardHeader>
                         <CardContent>
                             <OrdersTable orders={completedOrders} />
+                        </CardContent>
+                    </Card>
+                </TabsContent>
+                 <TabsContent value="cancelled">
+                     <Card>
+                        <CardHeader>
+                            <CardTitle>Recent Cancelled Orders</CardTitle>
+                            <CardDescription>The last 30 orders that have been cancelled.</CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                            <OrdersTable orders={cancelledOrders} />
                         </CardContent>
                     </Card>
                 </TabsContent>
