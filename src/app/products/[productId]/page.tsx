@@ -1,3 +1,5 @@
+'use client';
+
 import { notFound } from 'next/navigation';
 import { getProductById } from '@/lib/data';
 import { ProductImageGallery } from '@/components/product-image-gallery';
@@ -5,7 +7,9 @@ import { SizeSelector } from '@/components/size-selector';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { Heart, ShoppingCart } from 'lucide-react';
-import type { Metadata } from 'next';
+import { useState, useEffect } from 'react';
+import { useToast } from '@/hooks/use-toast';
+import type { Product } from '@/models/Product';
 
 type ProductPageProps = {
   params: {
@@ -13,26 +17,76 @@ type ProductPageProps = {
   };
 };
 
-export async function generateMetadata({ params }: ProductPageProps): Promise<Metadata> {
-  const product = await getProductById(params.productId);
+export default function ProductPage({ params }: ProductPageProps) {
+  const [product, setProduct] = useState<Product | null>(null);
+  const [selectedSize, setSelectedSize] = useState<string | null>(null);
+  const [isAdding, setIsAdding] = useState(false);
+  const { toast } = useToast();
+
+  useEffect(() => {
+    const fetchProduct = async () => {
+      const fetchedProduct = await getProductById(params.productId);
+      setProduct(fetchedProduct);
+    };
+    fetchProduct();
+  }, [params.productId]);
+
   if (!product) {
-    return {
-      title: 'Product not found',
+    // You can return a loading skeleton here
+    return <div>Loading...</div>;
+  }
+  
+  const handleAddToCart = async () => {
+    if (!selectedSize) {
+      toast({
+        variant: 'destructive',
+        title: 'Uh oh!',
+        description: 'Please select a size before adding to cart.',
+      });
+      return;
     }
-  }
-  return {
-    title: `${product.name} | FableFront`,
-    description: product.description,
-  }
-}
+    setIsAdding(true);
+    try {
+      const response = await fetch('/api/cart', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          productId: product._id,
+          size: selectedSize,
+          quantity: 1,
+        }),
+      });
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to add item to cart');
+      }
 
+      toast({
+        title: 'Success!',
+        description: `"${product.name}" has been added to your cart.`,
+      });
 
-export default async function ProductPage({ params }: ProductPageProps) {
-  const product = await getProductById(params.productId);
-
-  if (!product) {
-    notFound();
-  }
+    } catch (error: any) {
+        if(error.message.includes("Unauthorized")) {
+             toast({
+                variant: 'destructive',
+                title: 'Please Log In',
+                description: 'You must be logged in to add items to your cart.',
+            });
+        } else {
+            toast({
+                variant: 'destructive',
+                title: 'Error',
+                description: error.message || 'Something went wrong. Please try again.',
+            });
+        }
+    } finally {
+      setIsAdding(false);
+    }
+  };
 
   return (
     <div className="container mx-auto max-w-6xl px-4 py-12 md:px-6">
@@ -47,12 +101,17 @@ export default async function ProductPage({ params }: ProductPageProps) {
           
           <div className="space-y-4">
             <h2 className="text-lg font-semibold">Size</h2>
-            <SizeSelector sizes={product.sizes} />
+            <SizeSelector 
+              sizes={product.sizes}
+              selectedSize={selectedSize}
+              onSizeChange={setSelectedSize}
+            />
           </div>
 
           <div className="flex items-center gap-4">
-            <Button size="lg" className="flex-1">
-              <ShoppingCart className="mr-2" /> Add to Cart
+            <Button size="lg" className="flex-1" onClick={handleAddToCart} disabled={isAdding || !selectedSize}>
+              <ShoppingCart className="mr-2" /> 
+              {isAdding ? 'Adding...' : 'Add to Cart'}
             </Button>
             <Button size="lg" variant="secondary" className="flex-1">
               Buy Now

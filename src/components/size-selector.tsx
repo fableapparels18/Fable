@@ -1,15 +1,15 @@
 'use client';
 
-import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
 type SizeSelectorProps = {
   sizes: string[];
+  selectedSize: string | null;
+  onSizeChange: (size: string) => void;
 };
 
-export function SizeSelector({ sizes }: SizeSelectorProps) {
-  const [selectedSize, setSelectedSize] = useState<string | null>(null);
+export function SizeSelector({ sizes, selectedSize, onSizeChange }: SizeSelectorProps) {
 
   return (
     <div className="flex items-center gap-2">
@@ -22,7 +22,7 @@ export function SizeSelector({ sizes }: SizeSelectorProps) {
             'h-10 w-10 rounded-md',
             selectedSize === size && 'border-primary ring-2 ring-primary ring-offset-2'
           )}
-          onClick={() => setSelectedSize(size)}
+          onClick={() => onSizeChange(size)}
         >
           {size}
         </Button>
