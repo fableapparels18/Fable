@@ -4,10 +4,11 @@ import type { Product } from '@/models/Product';
 
 type ProductCarouselProps = {
   title: string;
+  subtitle?: string;
   products: Product[];
 };
 
-export function ProductCarousel({ title, products }: ProductCarouselProps) {
+export function ProductCarousel({ title, subtitle, products }: ProductCarouselProps) {
   if (products.length === 0) {
     return (
         <section className="container mx-auto px-4 md:px-6">
@@ -21,8 +22,9 @@ export function ProductCarousel({ title, products }: ProductCarouselProps) {
 
   return (
     <section className="container mx-auto px-4 md:px-6">
-      <div className="mb-8 flex items-center justify-between">
-        <h2 className="font-headline text-3xl font-bold tracking-tighter sm:text-4xl">{title}</h2>
+      <div className="mb-10 flex flex-col items-center justify-center text-center">
+        <h2 className="font-headline text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">{title}</h2>
+        {subtitle && <p className="mt-3 max-w-2xl text-muted-foreground md:text-lg">{subtitle}</p>}
       </div>
       <Carousel
         opts={{
@@ -33,7 +35,7 @@ export function ProductCarousel({ title, products }: ProductCarouselProps) {
       >
         <CarouselContent>
           {products.map((product) => (
-            <CarouselItem key={product.id} className="group md:basis-1/2 lg:basis-1/3 xl:basis-1/4">
+            <CarouselItem key={product.id} className="md:basis-1/2 lg:basis-1/3 xl:basis-1/4">
               <div className="p-1">
                 <ProductCard product={product} />
               </div>

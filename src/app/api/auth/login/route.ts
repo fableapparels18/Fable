@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import dbConnect from '@/lib/mongodb';
+import dbConnect, { isDbConfigured } from '@/lib/mongodb';
 import User from '@/models/User';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
@@ -7,11 +7,16 @@ import { serialize } from 'cookie';
 
 const JWT_SECRET = process.env.JWT_SECRET;
 
-if (!JWT_SECRET) {
-  throw new Error('Please define the JWT_SECRET environment variable inside .env.local');
-}
-
 export async function POST(request: Request) {
+  if (!isDbConfigured) {
+    return NextResponse.json({ message: 'Database not configured. Authentication is disabled.' }, { status: 503 });
+  }
+
+  if (!JWT_SECRET) {
+    console.error('JWT_SECRET not defined');
+    return NextResponse.json({ message: 'Server configuration error.' }, { status: 500 });
+  }
+  
   await dbConnect();
 
   try {

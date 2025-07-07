@@ -1,9 +1,13 @@
 import { NextResponse } from 'next/server';
-import dbConnect from '@/lib/mongodb';
+import dbConnect, { isDbConfigured } from '@/lib/mongodb';
 import User from '@/models/User';
 import bcrypt from 'bcryptjs';
 
 export async function POST(request: Request) {
+  if (!isDbConfigured) {
+    return NextResponse.json({ message: 'Database not configured. Registration is disabled.' }, { status: 503 });
+  }
+  
   await dbConnect();
 
   try {

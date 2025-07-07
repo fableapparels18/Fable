@@ -5,7 +5,6 @@ import { generateSlogan } from '@/ai/flows/generate-slogan';
 import { getNewProducts, getTrendingProducts, type Product } from '@/lib/data';
 import { Button } from '@/components/ui/button';
 import { ProductCarousel } from '@/components/product-carousel';
-import { Card, CardContent } from '@/components/ui/card';
 import { ArrowRight } from 'lucide-react';
 
 const categories = [
@@ -95,11 +94,23 @@ export default async function Home() {
   return (
     <div className="flex flex-col">
       <Hero />
-      <div className="space-y-16 py-12 md:space-y-24 md:py-20">
-        <ProductCarousel title="Trending Now" products={trendingProducts} />
+      <section className="bg-muted/50 py-16 md:py-24">
+        <ProductCarousel 
+          title="Trending Now" 
+          subtitle="Discover our most popular and talked-about pieces, loved by the community."
+          products={trendingProducts} 
+        />
+      </section>
+      <section className="py-16 md:py-24">
         <Categories />
-        <ProductCarousel title="New Releases" products={newProducts} />
-      </div>
+      </section>
+      <section className="bg-background py-16 md:py-24">
+        <ProductCarousel 
+          title="New Releases" 
+          subtitle="Fresh from our design studio. Be the first to wear the future of fashion."
+          products={newProducts} 
+        />
+      </section>
     </div>
   );
 }
