@@ -14,9 +14,10 @@ export interface Product {
     isNew: boolean;
   }
 
-export interface IProduct extends Omit<Product, '_id'>, Document {}
+export interface IProduct extends Product, Document {}
 
 const ProductSchema: Schema = new Schema({
+  _id: { type: String, required: true },
   name: { type: String, required: true },
   price: { type: Number, required: true },
   category: { type: String, enum: ['Oversized', 'Hoodie', 'Full Sleeves', 'Half Sleeves', 'Sweatshirt'], required: true },
@@ -27,6 +28,6 @@ const ProductSchema: Schema = new Schema({
   fabricAndCare: { type: String, required: true },
   isTrending: { type: Boolean, default: false },
   isNew: { type: Boolean, default: false },
-}, { timestamps: true });
+}, { timestamps: true, _id: false });
 
 export default mongoose.models.Product || mongoose.model<IProduct>('Product', ProductSchema);
