@@ -16,11 +16,14 @@ const categories = [
 
 async function Hero() {
   let slogan = 'Wear Your Story.';
-  try {
-    const sloganData = await generateSlogan({ brandName: 'Fable Apparels' });
-    slogan = sloganData.slogan || slogan;
-  } catch (error) {
-    console.error('Slogan generation failed, falling back to default slogan.', error);
+  // Only attempt to generate a slogan if an API key is configured.
+  if (process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY) {
+    try {
+      const sloganData = await generateSlogan({ brandName: 'Fable Apparels' });
+      slogan = sloganData.slogan || slogan;
+    } catch (error) {
+      console.error('Slogan generation failed, falling back to default slogan.', error);
+    }
   }
 
   return (
