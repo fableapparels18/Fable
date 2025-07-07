@@ -11,10 +11,10 @@ export async function POST(request: Request) {
   await dbConnect();
 
   try {
-    const { email, password } = await request.json();
+    const { name, email, password } = await request.json();
 
-    if (!email || !password) {
-      return NextResponse.json({ message: 'Email and password are required' }, { status: 400 });
+    if (!name || !email || !password) {
+      return NextResponse.json({ message: 'Name, email and password are required' }, { status: 400 });
     }
     
     if (password.length < 6) {
@@ -29,6 +29,7 @@ export async function POST(request: Request) {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const newUser = new User({
+      name,
       email,
       password: hashedPassword,
     });

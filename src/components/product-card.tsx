@@ -15,12 +15,11 @@ export function ProductCard({ product }: ProductCardProps) {
       <CardHeader className="p-0">
         <Link href="#" className="aspect-[4/5] overflow-hidden">
           <Image
-            src={product.image}
+            src={product.images[0]}
             alt={product.name}
             width={400}
             height={500}
             className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
-            data-ai-hint={product.data_ai_hint}
           />
         </Link>
       </CardHeader>

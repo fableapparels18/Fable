@@ -2,16 +2,17 @@ import Image from 'next/image';
 import Link from 'next/link';
 
 import { generateSlogan } from '@/ai/flows/generate-slogan';
-import { getNewProducts, getTrendingProducts, type Product } from '@/lib/data';
+import { getNewProducts, getTrendingProducts } from '@/lib/data';
+import type { Product } from '@/models/Product';
 import { Button } from '@/components/ui/button';
 import { ProductCarousel } from '@/components/product-carousel';
 import { ArrowRight } from 'lucide-react';
 
 const categories = [
-  { name: 'Oversized', href: '#', image: 'https://placehold.co/400x500.png', data_ai_hint: 'oversized tshirt' },
-  { name: 'Hoodies', href: '#', image: 'https://placehold.co/400x500.png', data_ai_hint: 'hoodie fashion' },
-  { name: 'Full Sleeves', href: '#', image: 'https://placehold.co/400x500.png', data_ai_hint: 'long sleeve' },
-  { name: 'Sweatshirts', href: '#', image: 'https://placehold.co/400x500.png', data_ai_hint: 'sweatshirt style' },
+  { name: 'Oversized', href: '#', image: 'https://placehold.co/400x500.png' },
+  { name: 'Hoodies', href: '#', image: 'https://placehold.co/400x500.png' },
+  { name: 'Full Sleeves', href: '#', image: 'https://placehold.co/400x500.png' },
+  { name: 'Sweatshirts', href: '#', image: 'https://placehold.co/400x500.png' },
 ];
 
 async function Hero() {
@@ -50,7 +51,6 @@ async function Hero() {
             width={600}
             height={700}
             className="rounded-lg object-cover shadow-2xl"
-            data-ai-hint="fashion model"
           />
         </div>
       </div>
@@ -76,7 +76,6 @@ function Categories() {
               width={400}
               height={500}
               className="h-full w-full object-cover transition-transform duration-300 ease-in-out group-hover:scale-105"
-              data-ai-hint={category.data_ai_hint}
             />
             <div className="absolute inset-0 bg-black/40" />
             <div className="absolute inset-0 flex items-center justify-center">

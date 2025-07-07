@@ -12,6 +12,7 @@ import { useToast } from '@/hooks/use-toast';
 export default function RegisterPage() {
   const router = useRouter();
   const { toast } = useToast();
+  const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -26,15 +27,15 @@ export default function RegisterPage() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ name, email, password }),
       });
 
       const data = await res.json();
 
       if (res.ok) {
         toast({
-          title: 'Success',
-          description: 'Registration successful! Please log in.',
+          title: 'Welcome to FableFront!',
+          description: 'Registration successful! Please log in to continue.',
         });
         router.push('/login');
       } else {
@@ -59,11 +60,23 @@ export default function RegisterPage() {
     <div className="flex min-h-[80vh] items-center justify-center bg-background px-4">
       <Card className="w-full max-w-sm">
         <CardHeader>
-          <CardTitle className="text-2xl">Register</CardTitle>
-          <CardDescription>Enter your email below to create an account.</CardDescription>
+          <CardTitle className="text-2xl">Create Your Account</CardTitle>
+          <CardDescription>Join the FableFront family and start your story.</CardDescription>
         </CardHeader>
         <form onSubmit={handleSubmit}>
           <CardContent className="grid gap-4">
+            <div className="grid gap-2">
+              <Label htmlFor="name">Name</Label>
+              <Input
+                id="name"
+                type="text"
+                placeholder="John Doe"
+                required
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                disabled={isLoading}
+              />
+            </div>
             <div className="grid gap-2">
               <Label htmlFor="email">Email</Label>
               <Input
@@ -82,6 +95,7 @@ export default function RegisterPage() {
                 id="password"
                 type="password"
                 required
+                minLength={6}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 disabled={isLoading}
@@ -90,11 +104,11 @@ export default function RegisterPage() {
           </CardContent>
           <CardFooter className="flex flex-col gap-4">
             <Button className="w-full" type="submit" disabled={isLoading}>
-              {isLoading ? 'Registering...' : 'Create account'}
+              {isLoading ? 'Creating Account...' : 'Create Account'}
             </Button>
             <div className="text-center text-sm">
               Already have an account?{' '}
-              <Link href="/login" className="underline">
+              <Link href="/login" className="underline hover:text-primary">
                 Log in
               </Link>
             </div>

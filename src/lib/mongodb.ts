@@ -28,7 +28,16 @@ async function dbConnect() {
       return mongoose;
     });
   }
-  cached.conn = await cached.promise;
+
+  try {
+    cached.conn = await cached.promise;
+  } catch (e) {
+    // If the connection fails, we reset the promise cache so that a new
+    // connection attempt can be made on the next request.
+    cached.promise = null;
+    throw e;
+  }
+  
   return cached.conn;
 }
 
