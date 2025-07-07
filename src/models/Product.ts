@@ -1,7 +1,7 @@
 import mongoose, { Schema, Document } from 'mongoose';
 
 export interface Product {
-    _id: any;
+    _id: string;
     name: string;
     price: number;
     category: 'Oversized' | 'Hoodie' | 'Full Sleeves' | 'Half Sleeves' | 'Sweatshirt';

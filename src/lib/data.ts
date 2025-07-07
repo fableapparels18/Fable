@@ -2,6 +2,7 @@ import type { Product } from '@/models/Product';
 import ProductModel from '@/models/Product';
 import dbConnect, { isDbConfigured } from '@/lib/mongodb';
 import { initialProducts } from '@/lib/initial-data';
+import mongoose from 'mongoose';
 
 export type { Product };
 
@@ -60,5 +61,28 @@ export async function getAllProducts(): Promise<Product[]> {
   } catch (error: any) {
     console.error(`Database error in getAllProducts: ${error.message}. Falling back to static data. Please check your MONGODB_URI.`);
     return initialProducts;
+  }
+}
+
+export async function getProductById(productId: string): Promise<Product | null> {
+  if (!isDbConfigured) {
+    const product = initialProducts.find((p) => p._id === productId);
+    return product || null;
+  }
+  try {
+    await seedProducts();
+    if (!mongoose.Types.ObjectId.isValid(productId)) {
+      return null;
+    }
+    const product = await ProductModel.findById(productId).lean();
+    if (!product) {
+      return null;
+    }
+    return JSON.parse(JSON.stringify(product));
+  } catch (error: any) {
+    console.error(`Database error in getProductById: ${error.message}.`);
+    // Fallback for demo purposes, in a real app you might not want this
+    const product = initialProducts.find((p) => p._id === productId);
+    return product || null;
   }
 }

@@ -13,7 +13,7 @@ export function ProductCard({ product }: ProductCardProps) {
   return (
     <Card className="group flex h-full w-full flex-col overflow-hidden rounded-lg shadow-sm transition-all duration-300 hover:shadow-xl hover:-translate-y-1.5 hover:shadow-primary/10">
       <CardHeader className="p-0">
-        <Link href="#" className="aspect-[4/5] overflow-hidden">
+        <Link href={`/products/${product._id}`} className="aspect-[4/5] overflow-hidden">
           <Image
             src={product.images[0]}
             alt={product.name}
@@ -25,7 +25,7 @@ export function ProductCard({ product }: ProductCardProps) {
       </CardHeader>
       <CardContent className="flex-1 p-4">
         <CardTitle className="mb-1 text-lg font-medium">
-            <Link href="#" className="hover:text-primary transition-colors">
+            <Link href={`/products/${product._id}`} className="hover:text-primary transition-colors">
                 {product.name}
             </Link>
         </CardTitle>
