@@ -3,7 +3,7 @@ import { getNewProducts } from '@/lib/data';
 
 export async function GET() {
   try {
-    const newProducts = getNewProducts();
+    const newProducts = await getNewProducts();
     return NextResponse.json(newProducts);
   } catch (error) {
     console.error('Error fetching new products:', error);

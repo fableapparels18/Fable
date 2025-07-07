@@ -89,8 +89,8 @@ function Categories() {
 
 
 export default async function Home() {
-  const trendingProducts: Product[] = getTrendingProducts();
-  const newProducts: Product[] = getNewProducts();
+  const trendingProducts: Product[] = await getTrendingProducts();
+  const newProducts: Product[] = await getNewProducts();
 
   return (
     <div className="flex flex-col">

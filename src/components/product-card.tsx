@@ -1,7 +1,7 @@
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import type { Product } from '@/lib/data';
+import type { Product } from '@/models/Product';
 import { ShoppingCart } from 'lucide-react';
 import Link from 'next/link';
 

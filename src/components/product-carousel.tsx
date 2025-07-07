@@ -1,6 +1,6 @@
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
 import { ProductCard } from './product-card';
-import type { Product } from '@/lib/data';
+import type { Product } from '@/models/Product';
 
 type ProductCarouselProps = {
   title: string;

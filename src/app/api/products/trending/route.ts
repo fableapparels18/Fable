@@ -3,7 +3,7 @@ import { getTrendingProducts } from '@/lib/data';
 
 export async function GET() {
   try {
-    const trendingProducts = getTrendingProducts();
+    const trendingProducts = await getTrendingProducts();
     return NextResponse.json(trendingProducts);
   } catch (error) {
     console.error('Error fetching trending products:', error);
