@@ -1,8 +1,8 @@
 import type { Product } from '@/models/Product';
 import ProductModel from '@/models/Product';
+import OrderModel, { type IOrder } from '@/models/Order';
 import dbConnect, { isDbConfigured } from '@/lib/mongodb';
 import { initialProducts } from '@/lib/initial-data';
-import mongoose from 'mongoose';
 
 export type { Product };
 
@@ -90,4 +90,33 @@ export async function getProductById(productId: string): Promise<Product | null>
     const product = initialProducts.find((p) => p._id === productId);
     return product || null;
   }
+}
+
+export async function getPendingOrders(): Promise<IOrder[]> {
+    if (!isDbConfigured) {
+        return [];
+    }
+    try {
+        await dbConnect();
+        const orders = await OrderModel.find({ status: { $in: ['Pending', 'Out for Delivery'] } }).sort({ createdAt: -1 }).lean();
+        return JSON.parse(JSON.stringify(orders));
+    } catch (error: any) {
+        handleDbError(error, 'getPendingOrders');
+        return [];
+    }
+}
+
+export async function getRecentCompletedOrders(): Promise<IOrder[]> {
+     if (!isDbConfigured) {
+        return [];
+    }
+    try {
+        await dbConnect();
+        // Fetch last 30 delivered orders
+        const orders = await OrderModel.find({ status: 'Delivered' }).sort({ updatedAt: -1 }).limit(30).lean();
+        return JSON.parse(JSON.stringify(orders));
+    } catch (error: any) {
+        handleDbError(error, 'getRecentCompletedOrders');
+        return [];
+    }
 }

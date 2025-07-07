@@ -9,6 +9,7 @@ import { Separator } from '@/components/ui/separator';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2, Trash2, Minus, Plus } from 'lucide-react';
 import type { Product } from '@/models/Product';
+import { CheckoutButton } from '@/components/checkout-button';
 
 interface PopulatedCartItem {
   productId: Product;
@@ -172,9 +173,7 @@ export default function CartPage() {
                 <span>Total</span>
                 <span>${subtotal.toFixed(2)}</span>
               </div>
-              <Button size="lg" className="w-full">
-                Proceed to Checkout
-              </Button>
+              <CheckoutButton />
             </CardContent>
           </Card>
         </div>
