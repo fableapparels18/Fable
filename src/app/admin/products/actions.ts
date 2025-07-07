@@ -30,6 +30,32 @@ export async function addProduct(data: ProductFormData) {
     redirect('/admin/products');
 }
 
+export async function updateProduct(productId: string, data: ProductFormData) {
+    try {
+        await dbConnect();
+        
+        const productData = {
+            ...data,
+            images: data.images.split(',').map(url => url.trim()).filter(url => url),
+            details: data.details.split('\n').map(detail => detail.trim()).filter(detail => detail),
+        };
+
+        await ProductModel.findByIdAndUpdate(productId, productData, { new: true, runValidators: true });
+
+    } catch (error) {
+        console.error('Failed to update product:', error);
+        return {
+            message: 'Database Error: Failed to Update Product.',
+        };
+    }
+    
+    revalidatePath(`/admin/products`);
+    revalidatePath(`/products/${productId}`);
+    revalidatePath('/');
+    redirect('/admin/products');
+}
+
+
 export async function deleteProduct(productId: string) {
     try {
         await dbConnect();

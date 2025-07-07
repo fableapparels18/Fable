@@ -83,7 +83,9 @@ export default async function AdminProductsPage() {
                                             </DropdownMenuTrigger>
                                             <DropdownMenuContent align="end">
                                                 <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                                                <DropdownMenuItem>Edit</DropdownMenuItem>
+                                                <DropdownMenuItem asChild>
+                                                    <Link href={`/admin/products/${product._id}/edit`}>Edit</Link>
+                                                </DropdownMenuItem>
                                                 <DeleteProductButton productId={product._id} productName={product.name} />
                                             </DropdownMenuContent>
                                         </DropdownMenu>

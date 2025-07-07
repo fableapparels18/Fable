@@ -79,9 +79,6 @@ export async function getProductById(productId: string): Promise<Product | null>
   }
   try {
     await seedProducts();
-    if (!mongoose.Types.ObjectId.isValid(productId)) {
-      return null;
-    }
     const product = await ProductModel.findById(productId).lean();
     if (!product) {
       return null;
