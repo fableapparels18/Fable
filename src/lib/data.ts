@@ -59,13 +59,52 @@ export async function getNewProducts(): Promise<Product[]> {
   }
 }
 
-export async function getAllProducts(): Promise<Product[]> {
+export async function getAllProducts(sort?: string): Promise<Product[]> {
   if (!isDbConfigured) {
-    return initialProducts;
+     let sortedProducts = [...initialProducts];
+    switch (sort) {
+      case 'price-asc':
+        sortedProducts.sort((a, b) => a.price - b.price);
+        break;
+      case 'price-desc':
+        sortedProducts.sort((a, b) => b.price - a.price);
+        break;
+      case 'name-asc':
+        sortedProducts.sort((a, b) => a.name.localeCompare(b.name));
+        break;
+      case 'name-desc':
+        sortedProducts.sort((a, b) => b.name.localeCompare(a.name));
+        break;
+      case 'date-desc':
+      default:
+        // Mock sorting by date desc by reversing (assuming initial data is oldest first)
+        return sortedProducts.reverse();
+    }
+    return sortedProducts;
   }
   try {
     await seedProducts();
-    const products = await ProductModel.find({}).lean();
+    const sortOption: { [key: string]: 1 | -1 } = {};
+    switch (sort) {
+        case 'price-asc':
+            sortOption.price = 1;
+            break;
+        case 'price-desc':
+            sortOption.price = -1;
+            break;
+        case 'name-asc':
+            sortOption.name = 1;
+            break;
+        case 'name-desc':
+            sortOption.name = -1;
+            break;
+        case 'date-desc':
+        default:
+            sortOption.createdAt = -1;
+            break;
+    }
+
+    const products = await ProductModel.find({}).sort(sortOption).lean();
     return JSON.parse(JSON.stringify(products));
   } catch (error: any) {
     handleDbError(error, 'getAllProducts');

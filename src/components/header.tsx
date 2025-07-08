@@ -9,7 +9,7 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
 const navLinks = [
-  { href: '#', label: 'Shop' },
+  { href: '/products', label: 'Shop' },
   { href: '#', label: 'Trending' },
   { href: '#', label: 'New Releases' },
 ];

@@ -9,10 +9,10 @@ import { ProductCarousel } from '@/components/product-carousel';
 import { ArrowRight } from 'lucide-react';
 
 const categories = [
-  { name: 'Oversized', href: '#', image: 'https://placehold.co/400x500.png' },
-  { name: 'Hoodies', href: '#', image: 'https://placehold.co/400x500.png' },
-  { name: 'Full Sleeves', href: '#', image: 'https://placehold.co/400x500.png' },
-  { name: 'Sweatshirts', href: '#', image: 'https://placehold.co/400x500.png' },
+  { name: 'Oversized', href: '/products', image: 'https://placehold.co/400x500.png' },
+  { name: 'Hoodies', href: '/products', image: 'https://placehold.co/400x500.png' },
+  { name: 'Full Sleeves', href: '/products', image: 'https://placehold.co/400x500.png' },
+  { name: 'Sweatshirts', href: '/products', image: 'https://placehold.co/400x500.png' },
 ];
 
 async function Hero() {
@@ -38,7 +38,7 @@ async function Hero() {
             {slogan}
           </p>
           <Button size="lg" variant="secondary" asChild>
-            <Link href="#">
+            <Link href="/products">
               Shop The Collection
               <ArrowRight className="ml-2 h-5 w-5" />
             </Link>
