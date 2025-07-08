@@ -1,3 +1,5 @@
+'use client';
+
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import jwt from 'jsonwebtoken';
@@ -8,23 +10,28 @@ import { LogoutButton } from './logout-button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { User, ShoppingBag, Phone, Mail, Pencil, MapPin } from 'lucide-react';
 import type { UserPayload } from '@/lib/auth';
+import { useState, useEffect } from 'react';
 
 
 export default function ProfilePage() {
-  const cookieStore = cookies();
-  const token = cookieStore.get('token')?.value;
+  const [user, setUser] = useState<UserPayload | null>(null);
 
-  if (!token) {
-    redirect('/login');
-  }
+  useEffect(() => {
+    const token = document.cookie.split('; ').find(row => row.startsWith('token='))?.split('=')[1];
+    if (!token) {
+        redirect('/login');
+    }
+    try {
+        const decoded = jwt.decode(token) as UserPayload;
+        setUser(decoded);
+    } catch (error) {
+        console.error('Invalid token', error);
+        redirect('/login');
+    }
+  }, []);
 
-  let user: UserPayload | null = null;
-  try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET!);
-    user = decoded as UserPayload;
-  } catch (error) {
-    console.error('Invalid token', error);
-    redirect('/login');
+  if (!user) {
+    return null; // Or a loading spinner
   }
   
   const userInitial = user.name.charAt(0).toUpperCase();
@@ -64,9 +71,11 @@ export default function ProfilePage() {
                 View Order History
               </Link>
             </Button>
-            <Button variant="outline" className="w-full justify-start" disabled>
-                <Pencil className="mr-2 h-4 w-4" />
-                Edit Details
+            <Button variant="outline" className="w-full justify-start" asChild>
+                <Link href="/profile/edit">
+                  <Pencil className="mr-2 h-4 w-4" />
+                  Edit Details
+                </Link>
             </Button>
             <Button variant="outline" className="w-full justify-start" asChild>
               <Link href="/profile/addresses">
