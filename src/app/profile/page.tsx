@@ -6,15 +6,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { LogoutButton } from './logout-button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { User, ShoppingBag } from 'lucide-react';
+import { User, ShoppingBag, Phone, Mail } from 'lucide-react';
+import type { UserPayload } from '@/lib/auth';
 
-interface UserPayload {
-  userId: string;
-  email: string;
-  name: string;
-  iat: number;
-  exp: number;
-}
 
 export default function ProfilePage() {
   const cookieStore = cookies();
@@ -46,14 +40,20 @@ export default function ProfilePage() {
           <CardDescription>Welcome back to your profile.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="space-y-4">
+          <div className="space-y-4 rounded-lg border p-4">
             <div className="space-y-1">
-                <p className="text-sm font-medium text-muted-foreground">Email</p>
-                <p className="text-lg">{user.email}</p>
+                <p className="text-sm font-medium text-muted-foreground flex items-center"><Phone className="mr-2 h-4 w-4" /> Phone Number</p>
+                <p className="text-lg pl-6">{user.phone}</p>
             </div>
+             {user.email && (
+                 <div className="space-y-1">
+                    <p className="text-sm font-medium text-muted-foreground flex items-center"><Mail className="mr-2 h-4 w-4" /> Email</p>
+                    <p className="text-lg pl-6">{user.email}</p>
+                </div>
+            )}
             <div className="space-y-1">
-                <p className="text-sm font-medium text-muted-foreground">User ID</p>
-                <p className="text-sm font-mono">{user.userId}</p>
+                <p className="text-sm font-medium text-muted-foreground flex items-center"><User className="mr-2 h-4 w-4" /> User ID</p>
+                <p className="text-sm font-mono pl-6">{user.userId}</p>
             </div>
           </div>
           

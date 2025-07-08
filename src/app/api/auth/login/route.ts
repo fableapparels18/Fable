@@ -20,13 +20,13 @@ export async function POST(request: Request) {
   await dbConnect();
 
   try {
-    const { email, password } = await request.json();
+    const { phone, password } = await request.json();
 
-    if (!email || !password) {
-      return NextResponse.json({ message: 'Email and password are required' }, { status: 400 });
+    if (!phone || !password) {
+      return NextResponse.json({ message: 'Phone number and password are required' }, { status: 400 });
     }
 
-    const user = await User.findOne({ email }).select('+password');
+    const user = await User.findOne({ phone }).select('+password');
 
     if (!user) {
       return NextResponse.json({ message: 'Invalid credentials' }, { status: 401 });
@@ -38,7 +38,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ message: 'Invalid credentials' }, { status: 401 });
     }
 
-    const token = jwt.sign({ userId: user._id, email: user.email, name: user.name }, JWT_SECRET, {
+    const token = jwt.sign({ userId: user._id, email: user.email, name: user.name, phone: user.phone }, JWT_SECRET, {
       expiresIn: '7d',
     });
     
