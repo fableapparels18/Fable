@@ -165,3 +165,34 @@ export async function getAllFeedback(): Promise<(IFeedback & { productId: { name
         return [];
     }
 }
+
+export async function searchProducts(query: string): Promise<Product[]> {
+    if (!isDbConfigured) {
+        if (!query) return [];
+        const lowerCaseQuery = query.toLowerCase();
+        return initialProducts.filter(p => 
+            p.name.toLowerCase().includes(lowerCaseQuery) || 
+            p.description.toLowerCase().includes(lowerCaseQuery)
+        );
+    }
+    if (!query) return [];
+    try {
+        await dbConnect();
+        const products = await ProductModel.find({
+            $or: [
+                { name: { $regex: query, $options: 'i' } },
+                { description: { $regex: query, $options: 'i' } },
+                { category: { $regex: query, $options: 'i' } },
+            ]
+        }).lean();
+        return JSON.parse(JSON.stringify(products));
+    } catch (error: any) {
+        handleDbError(error, `searchProducts (query: ${query})`);
+        if (!query) return [];
+        const lowerCaseQuery = query.toLowerCase();
+        return initialProducts.filter(p => 
+            p.name.toLowerCase().includes(lowerCaseQuery) || 
+            p.description.toLowerCase().includes(lowerCaseQuery)
+        );
+    }
+}
