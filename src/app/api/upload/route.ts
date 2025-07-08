@@ -1,7 +1,6 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { v2 as cloudinary } from 'cloudinary';
 import { jwtVerify } from 'jose';
-import { Readable } from 'stream';
 
 // Configure Cloudinary using environment variables
 cloudinary.config({
@@ -9,20 +8,6 @@ cloudinary.config({
   api_key: process.env.CLOUDINARY_API_KEY,
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
-
-// Helper function to upload a buffer stream to Cloudinary
-async function uploadStream(buffer: Buffer, options: any): Promise<any> {
-  return new Promise((resolve, reject) => {
-    const stream = cloudinary.uploader.upload_stream(options, (error, result) => {
-      if (error) {
-        return reject(error);
-      }
-      resolve(result);
-    });
-    // Convert buffer to a readable stream
-    Readable.from(buffer).pipe(stream);
-  });
-}
 
 const JWT_SECRET = process.env.JWT_SECRET;
 
@@ -56,8 +41,9 @@ export async function POST(request: NextRequest) {
     
     try {
         const buffer = Buffer.from(await file.arrayBuffer());
+        const dataUri = `data:${file.type};base64,${buffer.toString('base64')}`;
         
-        const result = await uploadStream(buffer, {
+        const result = await cloudinary.uploader.upload(dataUri, {
             folder: 'fablefront-products', // Optional: organize uploads in a folder
             resource_type: 'image',
         });
