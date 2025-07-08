@@ -28,8 +28,10 @@ const JWT_SECRET = process.env.JWT_SECRET;
 
 export async function POST(request: NextRequest) {
     // Check for server-side configurations
-    if (!JWT_SECRET || !process.env.CLOUDINARY_CLOUD_NAME) {
-        console.error('Server configuration error: JWT_SECRET or Cloudinary config is missing.');
+    const isCloudinaryConfigured = process.env.CLOUDINARY_CLOUD_NAME && process.env.CLOUDINARY_API_KEY && process.env.CLOUDINARY_API_SECRET;
+
+    if (!JWT_SECRET || !isCloudinaryConfigured) {
+        console.error('Server configuration error: JWT_SECRET or one or more Cloudinary environment variables (CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, CLOUDINARY_API_SECRET) are missing.');
         return NextResponse.json({ message: 'Server configuration error.' }, { status: 500 });
     }
 
