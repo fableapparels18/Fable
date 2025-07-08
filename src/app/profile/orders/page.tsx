@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { redirect, useRouter } from 'next/navigation';
-import Image from 'next/image';
+import { CldImage } from 'next-cloudinary';
 import Link from 'next/link';
 import { format } from 'date-fns';
 import type { IOrder } from '@/models/Order';
@@ -11,8 +11,11 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, Loader2 } from 'lucide-react';
+import Image from 'next/image';
 
 function OrderItem({ order }: { order: IOrder }) {
+    const hasCloudName = !!process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
+
     return (
         <AccordionItem value={order._id.toString()}>
             <AccordionTrigger>
@@ -41,7 +44,11 @@ function OrderItem({ order }: { order: IOrder }) {
                     {order.items.map(item => (
                         <div key={item.productId.toString() + item.size} className="flex items-center gap-4">
                             <div className="relative h-20 w-20 flex-shrink-0">
-                                <Image src={item.image} alt={item.name} fill className="rounded-md object-cover" />
+                                {hasCloudName ? (
+                                    <CldImage src={item.image} alt={item.name} fill crop="fill" gravity="auto" className="rounded-md object-cover" />
+                                ) : (
+                                    <Image src="https://placehold.co/80x80.png" alt={item.name} width={80} height={80} className="rounded-md object-cover" />
+                                )}
                             </div>
                             <div className="flex-grow">
                                 <Link href={`/products/${item.productId}`} className="font-semibold hover:underline">{item.name}</Link>
@@ -57,14 +64,6 @@ function OrderItem({ order }: { order: IOrder }) {
             </AccordionContent>
         </AccordionItem>
     );
-}
-
-// NOTE: This is a placeholder for a dedicated API route.
-// In a real app, you would fetch this from a protected API endpoint.
-async function getOrdersForCurrentUser(): Promise<IOrder[]> {
-    const res = await fetch('/api/orders/user');
-    if(!res.ok) return [];
-    return res.json();
 }
 
 export default function MyOrdersPage() {

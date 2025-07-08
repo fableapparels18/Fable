@@ -1,4 +1,4 @@
-import Image from 'next/image';
+import { CldImage } from 'next-cloudinary';
 import { format } from 'date-fns';
 import { getPendingOrders, getRecentCompletedOrders, getRecentCancelledOrders } from '@/lib/data';
 import type { IOrder } from '@/models/Order';
@@ -36,7 +36,7 @@ function OrdersTable({ orders }: { orders: IOrder[] }) {
                                 {order.items.map(item => (
                                     <div key={item.productId.toString() + item.size} className="flex items-center gap-2">
                                         <div className="relative h-10 w-10 flex-shrink-0">
-                                            <Image src={item.image} alt={item.name} fill className="rounded-sm object-cover" />
+                                            <CldImage src={item.image} alt={item.name} fill crop="fill" gravity="auto" className="rounded-sm object-cover" />
                                         </div>
                                         <div className="text-sm">
                                             <p className="font-medium">{item.name}</p>

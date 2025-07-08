@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useFormContext } from 'react-hook-form';
-import Image from 'next/image';
+import { CldImage } from 'next-cloudinary';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
@@ -10,25 +10,23 @@ import { useToast } from '@/hooks/use-toast';
 import { Loader2, Trash2, Upload } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { FormField, FormItem, FormMessage } from '@/components/ui/form';
+import { cn } from '@/lib/utils';
 
 export function ImageUploader() {
   const { control, getValues, setValue, formState: { isSubmitting } } = useFormContext();
   const { toast } = useToast();
   
-  // This state holds the array of image URLs
   const [imageUrls, setImageUrls] = useState<string[]>([]);
   const [isUploading, setIsUploading] = useState(false);
+  const hasCloudName = !!process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
 
-  // Initialize state from form on component mount
   useEffect(() => {
     const existingImages = getValues('images');
     if (typeof existingImages === 'string' && existingImages) {
-      // Filter out empty strings that might result from splitting
       setImageUrls(existingImages.split(',').map(url => url.trim()).filter(Boolean));
     }
   }, [getValues]);
   
-  // Helper to update the hidden form value
   const updateFormValue = (urls: string[]) => {
       setValue('images', urls.join(', '), { shouldValidate: true, shouldDirty: true });
   }
@@ -37,7 +35,6 @@ export function ImageUploader() {
     const file = event.target.files?.[0];
     if (!file) return;
 
-    // Basic file type validation
     if (!file.type.startsWith('image/')) {
         toast({ variant: 'destructive', title: 'Invalid File Type', description: 'Please upload an image file.'});
         return;
@@ -76,7 +73,6 @@ export function ImageUploader() {
       });
     } finally {
       setIsUploading(false);
-      // Reset file input to allow uploading the same file again
       if(event.target) {
         event.target.value = '';
       }
@@ -99,8 +95,8 @@ export function ImageUploader() {
           <div className="grid gap-2">
             <Label htmlFor="image-upload">Upload Image</Label>
             <div className="flex items-center gap-2">
-                <Button asChild variant="outline" disabled={isUploading || isSubmitting}>
-                    <label htmlFor="image-upload" className="cursor-pointer">
+                <Button asChild variant="outline" disabled={isUploading || isSubmitting || !hasCloudName}>
+                    <label htmlFor="image-upload" className={cn(!hasCloudName ? "cursor-not-allowed" : "cursor-pointer")}>
                         {isUploading ? (
                              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                         ) : (
@@ -114,12 +110,11 @@ export function ImageUploader() {
                     type="file"
                     accept="image/png, image/jpeg, image/webp"
                     onChange={handleFileUpload}
-                    disabled={isUploading || isSubmitting}
+                    disabled={isUploading || isSubmitting || !hasCloudName}
                     className="sr-only"
                 />
             </div>
-             {/* This hidden field is technically not needed since we use setValue,
-                 but it helps with react-hook-form's state tracking and validation triggering. */}
+            {!hasCloudName && <p className="text-xs text-destructive">Cloudinary is not configured. Please set NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME in your environment to enable uploads.</p>}
             <FormField
                 control={control}
                 name="images"
@@ -132,14 +127,16 @@ export function ImageUploader() {
             />
         </div>
         
-        {imageUrls.length > 0 ? (
+        {imageUrls.length > 0 && hasCloudName ? (
             <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-4">
                 {imageUrls.map((url, index) => (
                     <div key={index} className="relative group aspect-square">
-                        <Image
+                        <CldImage
                             src={url}
                             alt={`Product image ${index + 1}`}
                             fill
+                            crop="fill"
+                            gravity="auto"
                             sizes="(max-width: 768px) 33vw, (max-width: 1200px) 20vw, 15vw"
                             className="object-cover rounded-md border"
                         />

@@ -1,26 +1,43 @@
-import Image from 'next/image';
+'use client';
+
+import { CldImage } from 'next-cloudinary';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import type { Product } from '@/models/Product';
 import { ShoppingCart } from 'lucide-react';
 import Link from 'next/link';
+import Image from 'next/image';
 
 type ProductCardProps = {
   product: Product;
 };
 
 export function ProductCard({ product }: ProductCardProps) {
+  const hasCloudName = !!process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
+  
   return (
     <Card className="group flex h-full w-full flex-col overflow-hidden rounded-lg shadow-sm transition-all duration-300 hover:shadow-xl hover:-translate-y-1.5 hover:shadow-primary/10">
       <CardHeader className="p-0">
         <Link href={`/products/${product._id}`} className="aspect-[4/5] overflow-hidden">
-          <Image
-            src={product.images[0]}
-            alt={product.name}
-            width={400}
-            height={500}
-            className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
-          />
+          {hasCloudName && product.images.length > 0 ? (
+              <CldImage
+                src={product.images[0]}
+                alt={product.name}
+                width={400}
+                height={500}
+                crop="fill"
+                gravity="auto"
+                className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+              />
+          ) : (
+              <Image
+                src={'https://placehold.co/400x500.png'}
+                alt={product.name}
+                width={400}
+                height={500}
+                className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+              />
+          )}
         </Link>
       </CardHeader>
       <CardContent className="flex-1 p-4">

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import Image from 'next/image';
+import { CldImage } from 'next-cloudinary';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -10,6 +10,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Loader2, Trash2, Minus, Plus } from 'lucide-react';
 import type { Product } from '@/models/Product';
 import { CheckoutButton } from '@/components/checkout-button';
+import Image from 'next/image';
 
 interface PopulatedCartItem {
   productId: Product;
@@ -25,6 +26,7 @@ export default function CartPage() {
   const [cart, setCart] = useState<CartData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
+  const hasCloudName = !!process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
 
   const fetchCart = async () => {
     try {
@@ -123,12 +125,24 @@ export default function CartPage() {
             <Card key={`${item.productId._id}-${item.size}`} className="overflow-hidden">
               <CardContent className="flex items-center gap-6 p-4">
                 <div className="relative h-32 w-32 flex-shrink-0">
-                  <Image
-                    src={item.productId.images[0]}
-                    alt={item.productId.name}
-                    fill
-                    className="rounded-md object-cover"
-                  />
+                  {hasCloudName && item.productId.images.length > 0 ? (
+                      <CldImage
+                        src={item.productId.images[0]}
+                        alt={item.productId.name}
+                        fill
+                        crop="fill"
+                        gravity="auto"
+                        className="rounded-md object-cover"
+                      />
+                  ) : (
+                      <Image
+                        src="https://placehold.co/128x128.png"
+                        alt={item.productId.name}
+                        width={128}
+                        height={128}
+                        className="rounded-md object-cover"
+                      />
+                  )}
                 </div>
                 <div className="flex-grow">
                   <Link href={`/products/${item.productId._id}`} className="font-semibold text-lg hover:underline">{item.productId.name}</Link>
