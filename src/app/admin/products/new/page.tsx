@@ -17,6 +17,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Switch } from '@/components/ui/switch';
 import { useToast } from '@/hooks/use-toast';
 import { ArrowLeft, Loader2 } from 'lucide-react';
+import { ImageUploader } from '../image-uploader';
 
 const SIZES = ['S', 'M', 'L', 'XL', 'XXL'] as const;
 const CATEGORIES = ['Oversized', 'Hoodie', 'Full Sleeves', 'Half Sleeves', 'Sweatshirt'] as const;
@@ -136,28 +137,7 @@ export default function NewProductPage() {
                                 />
                             </CardContent>
                         </Card>
-                        <Card>
-                             <CardHeader>
-                                <CardTitle>Product Images</CardTitle>
-                                <CardDescription>Add URLs for the product images.</CardDescription>
-                            </CardHeader>
-                            <CardContent>
-                                <FormField
-                                    control={form.control}
-                                    name="images"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>Image URLs</FormLabel>
-                                            <FormControl>
-                                                <Textarea placeholder="https://example.com/image1.png, https://example.com/image2.png" {...field} />
-                                            </FormControl>
-                                            <FormDescription>Enter image URLs separated by a comma.</FormDescription>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-                            </CardContent>
-                        </Card>
+                        <ImageUploader />
                     </div>
 
                     <div className="lg:col-span-1 flex flex-col gap-6">
