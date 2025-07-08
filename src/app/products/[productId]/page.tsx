@@ -14,7 +14,7 @@ import type { IFeedback } from '@/models/Feedback';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { FeedbackFormSchema, type FeedbackFormData } from '@/lib/schemas';
-import { addFeedback } from '../feedback/actions';
+import { addFeedback } from '@/app/feedback/actions';
 import { StarRating } from '@/components/star-rating';
 import { Textarea } from '@/components/ui/textarea';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
