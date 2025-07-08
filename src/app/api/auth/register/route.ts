@@ -10,12 +10,13 @@ export async function POST(request: Request) {
   await dbConnect();
 
   try {
-    const { name, phone, email } = await request.json();
+    const { name, phone, email, password } = await request.json();
 
-    if (!name || !phone ) {
-      return NextResponse.json({ message: 'Name and phone number are required' }, { status: 400 });
+    if (!name || !phone || !password) {
+      return NextResponse.json({ message: 'Name, phone, and password are required' }, { status: 400 });
     }
 
+    // Check for existing users
     const existingUserByPhone = await User.findOne({ phone });
     if (existingUserByPhone) {
       return NextResponse.json({ message: 'A user with this phone number already exists' }, { status: 409 });
@@ -28,16 +29,12 @@ export async function POST(request: Request) {
       }
     }
     
-    const userData: any = {
-        name,
-        phone,
-    };
+    const userData: any = { name, phone, password };
     if (email) {
         userData.email = email;
     }
 
     const newUser = new User(userData);
-
     await newUser.save();
 
     return NextResponse.json({ message: 'User registered successfully' }, { status: 201 });
