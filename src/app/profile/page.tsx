@@ -64,14 +64,12 @@ export default function ProfilePage() {
                 View Order History
               </Link>
             </Button>
-            <Button variant="outline" className="w-full justify-start" asChild>
-              <Link href="#">
+            <Button variant="outline" className="w-full justify-start" disabled>
                 <Pencil className="mr-2 h-4 w-4" />
                 Edit Details
-              </Link>
             </Button>
             <Button variant="outline" className="w-full justify-start" asChild>
-              <Link href="#">
+              <Link href="/profile/addresses">
                 <MapPin className="mr-2 h-4 w-4" />
                 Manage Addresses
               </Link>

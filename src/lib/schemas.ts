@@ -23,3 +23,15 @@ export const FeedbackFormSchema = z.object({
 });
 
 export type FeedbackFormData = z.infer<typeof FeedbackFormSchema>;
+
+export const AddressFormSchema = z.object({
+  name: z.string().min(2, { message: 'Name must be at least 2 characters.' }),
+  line1: z.string().min(5, { message: 'Street address is required.' }),
+  line2: z.string().optional(),
+  city: z.string().min(2, { message: 'City is required.' }),
+  state: z.string().min(2, { message: 'State is required.' }),
+  zip: z.string().min(5, { message: 'A valid ZIP code is required.' }),
+  country: z.string().min(2, { message: 'Country is required.' }),
+});
+
+export type AddressFormData = z.infer<typeof AddressFormSchema>;
