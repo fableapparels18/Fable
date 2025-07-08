@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server';
 import dbConnect, { isDbConfigured } from '@/lib/mongodb';
 import User from '@/models/User';
-import Otp from '@/models/Otp';
 
 export async function POST(request: Request) {
   if (!isDbConfigured) {
@@ -11,23 +10,13 @@ export async function POST(request: Request) {
   await dbConnect();
 
   try {
-    const { name, phone, email, password, otp } = await request.json();
+    const { name, phone, email, password } = await request.json();
 
-    if (!name || !phone || !password || !otp) {
-      return NextResponse.json({ message: 'All fields including OTP are required' }, { status: 400 });
+    if (!name || !phone || !password) {
+      return NextResponse.json({ message: 'Name, phone, and password are required' }, { status: 400 });
     }
 
-    // Verify OTP
-    const otpDoc = await Otp.findOne({ phone, otp });
-
-    if (!otpDoc) {
-      return NextResponse.json({ message: 'Invalid or expired OTP.' }, { status: 400 });
-    }
-
-    // OTP is verified, delete it
-    await Otp.deleteOne({ _id: otpDoc._id });
-
-    // Check for existing users (double-check)
+    // Check for existing users
     const existingUserByPhone = await User.findOne({ phone });
     if (existingUserByPhone) {
       return NextResponse.json({ message: 'A user with this phone number already exists' }, { status: 409 });
