@@ -1,10 +1,12 @@
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import jwt from 'jsonwebtoken';
+import Link from 'next/link';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import { LogoutButton } from './logout-button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { User } from 'lucide-react';
+import { User, ShoppingBag } from 'lucide-react';
 
 interface UserPayload {
   userId: string;
@@ -43,7 +45,7 @@ export default function ProfilePage() {
           <CardTitle className="text-3xl">{user.name}</CardTitle>
           <CardDescription>Welcome back to your profile.</CardDescription>
         </CardHeader>
-        <CardContent className="space-y-6">
+        <CardContent className="space-y-4">
           <div className="space-y-4">
             <div className="space-y-1">
                 <p className="text-sm font-medium text-muted-foreground">Email</p>
@@ -54,6 +56,14 @@ export default function ProfilePage() {
                 <p className="text-sm font-mono">{user.userId}</p>
             </div>
           </div>
+          
+          <Button variant="outline" className="w-full" asChild>
+              <Link href="/profile/orders">
+                <ShoppingBag className="mr-2 h-4 w-4" />
+                View Order History
+              </Link>
+          </Button>
+
           <LogoutButton />
         </CardContent>
       </Card>
