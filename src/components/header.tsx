@@ -1,6 +1,6 @@
 'use client';
 
-import { Menu, Search, ShoppingCart, User } from 'lucide-react';
+import { Menu, Search, ShoppingCart, User, Shield } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
@@ -56,6 +56,12 @@ export function Header() {
             <Input type="search" name="q" placeholder="Search products..." className="w-full pl-9" />
           </form>
           <Button variant="ghost" size="icon" asChild>
+            <Link href="/admin/dashboard">
+              <Shield className="h-5 w-5" />
+              <span className="sr-only">Admin</span>
+            </Link>
+          </Button>
+          <Button variant="ghost" size="icon" asChild>
             <Link href="/profile">
               <User className="h-5 w-5" />
               <span className="sr-only">Profile</span>
@@ -99,6 +105,12 @@ export function Header() {
                     ))}
                 </nav>
                  <div className="flex items-center gap-4 border-t pt-6">
+                    <Button variant="ghost" size="icon" className="w-auto px-2 justify-start gap-2" asChild>
+                        <Link href="/admin/dashboard" onClick={() => setSheetOpen(false)}>
+                            <Shield className="h-5 w-5" />
+                            <span>Admin</span>
+                        </Link>
+                    </Button>
                     <Button variant="ghost" size="icon" className="w-auto px-2 justify-start gap-2" asChild>
                         <Link href="/profile" onClick={() => setSheetOpen(false)}>
                             <User className="h-5 w-5" />
