@@ -3,7 +3,6 @@ import mongoose, { Schema, Document } from 'mongoose';
 export interface IUser extends Document {
   name: string;
   phone: string;
-  password?: string;
   email?: string;
 }
 
@@ -23,11 +22,6 @@ const UserSchema: Schema = new Schema({
     unique: true,
     sparse: true, // Allows multiple documents to have a null email, but unique if provided
     match: [/.+\@.+\..+/, 'Please enter a valid email address']
-  },
-  password: { 
-    type: String, 
-    required: [true, 'Please provide a password.'],
-    select: false 
   },
 }, { timestamps: true });
 

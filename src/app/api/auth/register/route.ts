@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server';
 import dbConnect, { isDbConfigured } from '@/lib/mongodb';
 import User from '@/models/User';
-import bcrypt from 'bcryptjs';
 
 export async function POST(request: Request) {
   if (!isDbConfigured) {
@@ -11,14 +10,10 @@ export async function POST(request: Request) {
   await dbConnect();
 
   try {
-    const { name, phone, email, password } = await request.json();
+    const { name, phone, email } = await request.json();
 
-    if (!name || !phone || !password) {
-      return NextResponse.json({ message: 'Name, phone number and password are required' }, { status: 400 });
-    }
-    
-    if (password.length < 6) {
-        return NextResponse.json({ message: 'Password must be at least 6 characters long' }, { status: 400 });
+    if (!name || !phone ) {
+      return NextResponse.json({ message: 'Name and phone number are required' }, { status: 400 });
     }
 
     const existingUserByPhone = await User.findOne({ phone });
@@ -32,13 +27,10 @@ export async function POST(request: Request) {
         return NextResponse.json({ message: 'A user with this email already exists' }, { status: 409 });
       }
     }
-
-    const hashedPassword = await bcrypt.hash(password, 10);
     
     const userData: any = {
         name,
         phone,
-        password: hashedPassword,
     };
     if (email) {
         userData.email = email;
