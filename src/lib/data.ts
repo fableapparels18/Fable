@@ -3,87 +3,51 @@ import ProductModel from '@/models/Product';
 import OrderModel, { type IOrder } from '@/models/Order';
 import FeedbackModel, { type IFeedback } from '@/models/Feedback';
 import dbConnect, { isDbConfigured } from '@/lib/mongodb';
-import { initialProducts } from '@/lib/initial-data';
 
 export type { Product };
 
-let seeded = false;
-async function seedProducts() {
-    if (seeded || !isDbConfigured) {
-      return;
-    }
-    // Let errors from dbConnect or Mongoose bubble up to the caller.
-    await dbConnect();
-    const count = await ProductModel.countDocuments();
-    if (count === 0) {
-        console.log('No products found. Seeding database...');
-        await ProductModel.insertMany(initialProducts);
-        console.log('Database seeded with initial products.');
-    }
-    seeded = true;
-}
-
 const handleDbError = (error: any, functionName: string) => {
     if (error.message.includes('bad auth')) {
-        console.error(`MongoDB authentication failed in ${functionName}. Please double-check your MONGODB_URI in .env.local. Falling back to static data.`);
+        console.error(`MongoDB authentication failed in ${functionName}. Please double-check your MONGODB_URI in .env.local.`);
     } else {
-        console.error(`Database error in ${functionName}: ${error.message}. Falling back to static data.`);
+        console.error(`Database error in ${functionName}: ${error.message}.`);
     }
 };
 
 export async function getTrendingProducts(): Promise<Product[]> {
   if (!isDbConfigured) {
-    return initialProducts.filter((p) => p.isTrending);
+    return [];
   }
   try {
-    await seedProducts();
+    await dbConnect();
     const products = await ProductModel.find({ isTrending: true }).lean();
     return JSON.parse(JSON.stringify(products));
   } catch (error: any) {
     handleDbError(error, 'getTrendingProducts');
-    return initialProducts.filter((p) => p.isTrending);
+    return [];
   }
 }
 
 export async function getNewProducts(): Promise<Product[]> {
   if (!isDbConfigured) {
-    return initialProducts.filter((p) => p.isNew);
+    return [];
   }
   try {
-    await seedProducts();
+    await dbConnect();
     const products = await ProductModel.find({ isNew: true }).lean();
     return JSON.parse(JSON.stringify(products));
   } catch (error: any) {
     handleDbError(error, 'getNewProducts');
-    return initialProducts.filter((p) => p.isNew);
+    return [];
   }
 }
 
 export async function getAllProducts(sort?: string): Promise<Product[]> {
   if (!isDbConfigured) {
-     let sortedProducts = [...initialProducts];
-    switch (sort) {
-      case 'price-asc':
-        sortedProducts.sort((a, b) => a.price - b.price);
-        break;
-      case 'price-desc':
-        sortedProducts.sort((a, b) => b.price - a.price);
-        break;
-      case 'name-asc':
-        sortedProducts.sort((a, b) => a.name.localeCompare(b.name));
-        break;
-      case 'name-desc':
-        sortedProducts.sort((a, b) => b.name.localeCompare(a.name));
-        break;
-      case 'date-desc':
-      default:
-        // Mock sorting by date desc by reversing (assuming initial data is oldest first)
-        return sortedProducts.reverse();
-    }
-    return sortedProducts;
+     return [];
   }
   try {
-    await seedProducts();
+    await dbConnect();
     const sortOption: { [key: string]: 1 | -1 } = {};
     switch (sort) {
         case 'price-asc':
@@ -108,17 +72,16 @@ export async function getAllProducts(sort?: string): Promise<Product[]> {
     return JSON.parse(JSON.stringify(products));
   } catch (error: any) {
     handleDbError(error, 'getAllProducts');
-    return initialProducts;
+    return [];
   }
 }
 
 export async function getProductById(productId: string): Promise<Product | null> {
   if (!isDbConfigured) {
-    const product = initialProducts.find((p) => p._id === productId);
-    return product || null;
+    return null;
   }
   try {
-    await seedProducts();
+    await dbConnect();
     const product = await ProductModel.findById(productId).lean();
     if (!product) {
       return null;
@@ -126,9 +89,7 @@ export async function getProductById(productId: string): Promise<Product | null>
     return JSON.parse(JSON.stringify(product));
   } catch (error: any) {
     handleDbError(error, `getProductById (ID: ${productId})`);
-    // Fallback for demo purposes, in a real app you might not want this
-    const product = initialProducts.find((p) => p._id === productId);
-    return product || null;
+    return null;
   }
 }
 
@@ -206,15 +167,9 @@ export async function getAllFeedback(): Promise<(IFeedback & { productId: { name
 }
 
 export async function searchProducts(query: string): Promise<Product[]> {
-    if (!isDbConfigured) {
-        if (!query) return [];
-        const lowerCaseQuery = query.toLowerCase();
-        return initialProducts.filter(p => 
-            p.name.toLowerCase().includes(lowerCaseQuery) || 
-            p.description.toLowerCase().includes(lowerCaseQuery)
-        );
+    if (!isDbConfigured || !query) {
+        return [];
     }
-    if (!query) return [];
     try {
         await dbConnect();
         const products = await ProductModel.find({
@@ -227,11 +182,6 @@ export async function searchProducts(query: string): Promise<Product[]> {
         return JSON.parse(JSON.stringify(products));
     } catch (error: any) {
         handleDbError(error, `searchProducts (query: ${query})`);
-        if (!query) return [];
-        const lowerCaseQuery = query.toLowerCase();
-        return initialProducts.filter(p => 
-            p.name.toLowerCase().includes(lowerCaseQuery) || 
-            p.description.toLowerCase().includes(lowerCaseQuery)
-        );
+        return [];
     }
 }
