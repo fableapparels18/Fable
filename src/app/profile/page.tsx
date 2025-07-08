@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { LogoutButton } from './logout-button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { User, ShoppingBag, Phone, Mail } from 'lucide-react';
+import { User, ShoppingBag, Phone, Mail, Pencil, MapPin } from 'lucide-react';
 import type { UserPayload } from '@/lib/auth';
 
 
@@ -57,12 +57,26 @@ export default function ProfilePage() {
             </div>
           </div>
           
-          <Button variant="outline" className="w-full" asChild>
+          <div className="space-y-3 pt-2">
+            <Button variant="outline" className="w-full justify-start" asChild>
               <Link href="/profile/orders">
                 <ShoppingBag className="mr-2 h-4 w-4" />
                 View Order History
               </Link>
-          </Button>
+            </Button>
+            <Button variant="outline" className="w-full justify-start" asChild>
+              <Link href="#">
+                <Pencil className="mr-2 h-4 w-4" />
+                Edit Details
+              </Link>
+            </Button>
+            <Button variant="outline" className="w-full justify-start" asChild>
+              <Link href="#">
+                <MapPin className="mr-2 h-4 w-4" />
+                Manage Addresses
+              </Link>
+            </Button>
+          </div>
 
           <LogoutButton />
         </CardContent>

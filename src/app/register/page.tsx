@@ -34,9 +34,10 @@ export default function RegisterPage() {
       if (res.ok) {
         toast({
           title: 'Welcome to FableFront!',
-          description: 'Registration successful! Please log in to continue.',
+          description: 'Your account has been created.',
         });
-        router.push('/login');
+        router.push('/profile');
+        router.refresh();
       } else {
         throw new Error(data.message || 'An error occurred.');
       }
