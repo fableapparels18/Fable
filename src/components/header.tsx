@@ -7,6 +7,7 @@ import { Input } from './ui/input';
 import { Sheet, SheetContent, SheetTrigger } from './ui/sheet';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
+import { motion, useScroll, useMotionValueEvent } from 'framer-motion';
 
 const navLinks = [
   { href: '/products', label: 'Shop' },
@@ -17,6 +18,17 @@ const navLinks = [
 export function Header() {
   const router = useRouter();
   const [isSheetOpen, setSheetOpen] = useState(false);
+  const [hidden, setHidden] = useState(false);
+  const { scrollY } = useScroll();
+
+  useMotionValueEvent(scrollY, "change", (latest) => {
+    const previous = scrollY.getPrevious() ?? 0;
+    if (latest > previous && latest > 150) {
+      setHidden(true);
+    } else {
+      setHidden(false);
+    }
+  });
 
   const handleSearch = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -24,14 +36,21 @@ export function Header() {
     const query = formData.get('q') as string;
     if (query.trim()) {
       router.push(`/search?q=${encodeURIComponent(query.trim())}`);
-      // close sheet if it's open
       setSheetOpen(false);
     }
   };
 
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <motion.header
+      variants={{
+        visible: { y: 0 },
+        hidden: { y: "-100%" },
+      }}
+      animate={hidden ? "hidden" : "visible"}
+      transition={{ duration: 0.35, ease: "easeInOut" }}
+      className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60"
+    >
       <div className="container mx-auto flex h-16 max-w-7xl items-center justify-between px-4 md:px-6">
         <div className="flex items-center gap-6">
           <Link href="/" className="mr-6 flex items-center space-x-2">
@@ -39,13 +58,21 @@ export function Header() {
           </Link>
           <nav className="hidden gap-6 md:flex">
             {navLinks.map((link) => (
-              <Link
-                key={link.label}
-                href={link.href}
-                className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
-              >
-                {link.label}
-              </Link>
+               <motion.div key={link.label} className="relative">
+                <Link
+                  href={link.href}
+                  className="block text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
+                >
+                  {link.label}
+                </Link>
+                <motion.div
+                  className="absolute -bottom-1 left-0 h-0.5 w-full bg-primary"
+                  initial={{ scaleX: 0 }}
+                  whileHover={{ scaleX: 1 }}
+                  transition={{ duration: 0.3, ease: 'easeOut' }}
+                  style={{ transformOrigin: 'center' }}
+                />
+              </motion.div>
             ))}
           </nav>
         </div>
@@ -94,14 +121,16 @@ export function Header() {
                 </form>
                 <nav className="flex flex-col gap-4">
                     {navLinks.map((link) => (
-                    <Link
-                        key={link.label}
-                        href={link.href}
-                        onClick={() => setSheetOpen(false)}
-                        className="text-lg font-medium"
-                    >
-                        {link.label}
-                    </Link>
+                      <motion.div key={link.label} className="relative">
+                        <Link
+                            key={link.label}
+                            href={link.href}
+                            onClick={() => setSheetOpen(false)}
+                            className="block text-lg font-medium"
+                        >
+                            {link.label}
+                        </Link>
+                      </motion.div>
                     ))}
                 </nav>
                  <div className="flex items-center gap-4 border-t pt-6">
@@ -129,6 +158,6 @@ export function Header() {
             </Sheet>
         </div>
       </div>
-    </header>
+    </motion.header>
   );
 }

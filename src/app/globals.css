@@ -86,3 +86,17 @@ body {
     @apply bg-background text-foreground;
   }
 }
+
+@layer components {
+  .button-fill-up {
+    @apply relative overflow-hidden z-0;
+  }
+  .button-fill-up::before {
+    content: '';
+    @apply absolute top-full left-0 w-full h-full bg-primary-foreground/10 -z-10;
+    transition: transform 0.3s ease-in-out;
+  }
+  .button-fill-up:hover::before {
+    transform: translateY(-100%);
+  }
+}

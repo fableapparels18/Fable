@@ -7,6 +7,7 @@ import type { Product } from '@/models/Product';
 import { Button } from '@/components/ui/button';
 import { ProductCarousel } from '@/components/product-carousel';
 import { ArrowRight } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 const categories = [
   { name: 'Oversized', href: '/products', image: 'https://placehold.co/400x500.png' },
@@ -37,7 +38,7 @@ async function Hero() {
           <p className="font-headline animate-pulse text-lg text-primary-foreground/80 md:text-xl">
             {slogan}
           </p>
-          <Button size="lg" variant="secondary" asChild>
+          <Button size="lg" variant="secondary" asChild className="button-fill-up">
             <Link href="/products">
               Shop The Collection
               <ArrowRight className="ml-2 h-5 w-5" />

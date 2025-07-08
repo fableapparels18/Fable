@@ -40,7 +40,7 @@ export function CheckoutButton() {
     };
 
     return (
-        <Button size="lg" className="w-full" onClick={handleCheckout} disabled={isLoading}>
+        <Button size="lg" className="w-full button-fill-up" onClick={handleCheckout} disabled={isLoading}>
             {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             {isLoading ? 'Placing Order...' : 'Proceed to Checkout'}
         </Button>

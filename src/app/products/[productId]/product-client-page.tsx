@@ -86,7 +86,7 @@ function FeedbackForm({ productId, onFeedbackSubmitted }: { productId: string, o
                 </FormItem>
               )}
             />
-            <Button type="submit" disabled={isLoading}>
+            <Button type="submit" disabled={isLoading} className="button-fill-up">
               {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               Submit Review
             </Button>
@@ -226,11 +226,11 @@ export function ProductClientPage({ productId, initialProduct: product, initialF
           </div>
 
           <div className="flex items-center gap-4">
-            <Button size="lg" className="flex-1" onClick={handleAddToCart} disabled={isAdding || !selectedSize}>
+            <Button size="lg" className="flex-1 button-fill-up" onClick={handleAddToCart} disabled={isAdding || !selectedSize}>
               <ShoppingCart className="mr-2" /> 
               {isAdding ? 'Adding...' : 'Add to Cart'}
             </Button>
-            <Button size="lg" variant="secondary" className="flex-1">
+            <Button size="lg" variant="secondary" className="flex-1 button-fill-up">
               Buy Now
             </Button>
             <Button size="icon" variant="outline">
