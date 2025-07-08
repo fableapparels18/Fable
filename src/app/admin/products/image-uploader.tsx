@@ -114,7 +114,7 @@ export function ImageUploader() {
                     className="sr-only"
                 />
             </div>
-            {!hasCloudName && <p className="text-xs text-destructive">Cloudinary is not configured. Please set NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME in your environment to enable uploads.</p>}
+            {!hasCloudName && <p className="text-xs text-destructive">Cloudinary not configured. Please set NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME in .env.local and restart the server to enable uploads.</p>}
             <FormField
                 control={control}
                 name="images"
