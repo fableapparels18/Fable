@@ -4,6 +4,7 @@ import { NextResponse } from 'next/server';
 import dbConnect, { isDbConfigured } from '@/lib/mongodb';
 import User from '@/models/User';
 import Otp from '@/models/Otp';
+import { sendOtpSms, isTwilioConfigured } from '@/lib/twilio';
 
 export async function POST(request: Request) {
     if (!isDbConfigured) {
@@ -27,18 +28,19 @@ export async function POST(request: Request) {
         
         await Otp.findOneAndUpdate(
             { phone },
-            { phone, otp },
+            { phone, otp, createdAt: new Date() },
             { upsert: true, new: true, setDefaultsOnInsert: true }
         );
+        
+        // --- NEW: SEND OTP VIA TWILIO (with fallback) ---
+        await sendOtpSms(phone, otp);
 
-        // --- MOCK OTP SENDING ---
-        console.log(`\n\n--- FableFront Registration OTP ---`);
-        console.log(`OTP for ${phone}: ${otp}`);
-        console.log(`This will expire in 5 minutes.`);
-        console.log(`-----------------------------------\n\n`);
-        // -------------------------
+        const message = isTwilioConfigured
+            ? 'An OTP has been sent to your phone number.'
+            : 'OTP generated. Check your server console, as Twilio is not configured.';
+        // ------------------------------------------------
 
-        return NextResponse.json({ message: 'OTP sent successfully.' });
+        return NextResponse.json({ message });
     } catch (error: any) {
         console.error('Send OTP error:', error);
         return NextResponse.json({ message: 'An error occurred while sending the OTP.' }, { status: 500 });
