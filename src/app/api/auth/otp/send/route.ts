@@ -19,26 +19,23 @@ export async function POST(request: Request) {
         }
 
         const user = await User.findOne({ phone });
-        if (!user) {
-            return NextResponse.json({ message: 'No user found with this phone number. Please register first.' }, { status: 404 });
+        if (user) {
+            return NextResponse.json({ message: 'A user with this phone number already exists.' }, { status: 409 });
         }
 
         const otp = Math.floor(100000 + Math.random() * 900000).toString();
-        const expiresAt = new Date(Date.now() + 5 * 60 * 1000); // 5 minutes expiry
-
+        
         await Otp.findOneAndUpdate(
             { phone },
-            { phone, otp, expiresAt },
+            { phone, otp, createdAt: new Date() },
             { upsert: true, new: true, setDefaultsOnInsert: true }
         );
 
         // --- MOCK OTP SENDING ---
-        // In a real application, you would use an SMS service like Twilio here.
-        // For this demo, we are logging the OTP to the console for easy testing.
-        console.log(`\n\n--- FableFront OTP ---`);
+        console.log(`\n\n--- FableFront Registration OTP ---`);
         console.log(`OTP for ${phone}: ${otp}`);
         console.log(`This will expire in 5 minutes.`);
-        console.log(`----------------------\n\n`);
+        console.log(`-----------------------------------\n\n`);
         // -------------------------
 
         return NextResponse.json({ message: 'OTP sent successfully.' });
