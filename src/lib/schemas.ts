@@ -16,3 +16,10 @@ export const ProductFormSchema = z.object({
 });
 
 export type ProductFormData = z.infer<typeof ProductFormSchema>;
+
+export const FeedbackFormSchema = z.object({
+  rating: z.coerce.number().min(1, "Please select a rating.").max(5),
+  comment: z.string().min(10, { message: "Comment must be at least 10 characters." }).max(500, { message: "Comment must be less than 500 characters." }),
+});
+
+export type FeedbackFormData = z.infer<typeof FeedbackFormSchema>;

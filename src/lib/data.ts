@@ -1,6 +1,7 @@
 import type { Product } from '@/models/Product';
 import ProductModel from '@/models/Product';
 import OrderModel, { type IOrder } from '@/models/Order';
+import FeedbackModel, { type IFeedback } from '@/models/Feedback';
 import dbConnect, { isDbConfigured } from '@/lib/mongodb';
 import { initialProducts } from '@/lib/initial-data';
 
@@ -133,6 +134,34 @@ export async function getRecentCancelledOrders(): Promise<IOrder[]> {
         return JSON.parse(JSON.stringify(orders));
     } catch (error: any) {
         handleDbError(error, 'getRecentCancelledOrders');
+        return [];
+    }
+}
+
+export async function getFeedbackByProductId(productId: string): Promise<IFeedback[]> {
+    if (!isDbConfigured) {
+        return [];
+    }
+    try {
+        await dbConnect();
+        const feedback = await FeedbackModel.find({ productId }).sort({ createdAt: -1 }).lean();
+        return JSON.parse(JSON.stringify(feedback));
+    } catch (error: any) {
+        handleDbError(error, 'getFeedbackByProductId');
+        return [];
+    }
+}
+
+export async function getAllFeedback(): Promise<(IFeedback & { productId: { name: string } })[]> {
+    if (!isDbConfigured) {
+        return [];
+    }
+    try {
+        await dbConnect();
+        const feedback = await FeedbackModel.find({}).sort({ createdAt: -1 }).populate('productId', 'name').lean();
+        return JSON.parse(JSON.stringify(feedback));
+    } catch (error: any) {
+        handleDbError(error, 'getAllFeedback');
         return [];
     }
 }
