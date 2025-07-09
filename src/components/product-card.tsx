@@ -16,7 +16,7 @@ export function ProductCard({ product }: ProductCardProps) {
   const hasCloudName = !!process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
   
   return (
-    <Card className="group flex h-full w-full flex-col overflow-hidden rounded-lg shadow-sm transition-all duration-300 hover:shadow-xl hover:-translate-y-1.5 hover:shadow-primary/10">
+    <Card className="group flex h-full w-full flex-col overflow-hidden rounded-lg shadow-sm transition-all duration-300 hover:shadow-xl">
       <CardHeader className="p-0">
         <Link href={`/products/${product._id}`} className="aspect-[4/5] overflow-hidden">
           {hasCloudName && product.images.length > 0 ? (
@@ -50,7 +50,7 @@ export function ProductCard({ product }: ProductCardProps) {
       </CardContent>
       <CardFooter className="flex items-center justify-between p-4 pt-0">
         <p className="text-xl font-bold text-foreground">${product.price.toFixed(2)}</p>
-        <Button size="sm">
+        <Button size="sm" className="opacity-0 group-hover:opacity-100 transition-opacity">
           <ShoppingCart className="mr-2 h-4 w-4" />
           Add to Cart
         </Button>

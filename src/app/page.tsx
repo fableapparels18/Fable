@@ -7,18 +7,16 @@ import type { Product } from '@/models/Product';
 import { Button } from '@/components/ui/button';
 import { ProductCarousel } from '@/components/product-carousel';
 import { ArrowRight } from 'lucide-react';
-import { cn } from '@/lib/utils';
 
 const categories = [
-  { name: 'Oversized', href: '/products', image: 'https://placehold.co/400x500.png' },
-  { name: 'Hoodies', href: '/products', image: 'https://placehold.co/400x500.png' },
-  { name: 'Full Sleeves', href: '/products', image: 'https://placehold.co/400x500.png' },
-  { name: 'Sweatshirts', href: '/products', image: 'https://placehold.co/400x500.png' },
+  { name: 'Oversized', href: '/products', image: 'https://placehold.co/400x500.png', hint: 'oversized tshirt' },
+  { name: 'Hoodies', href: '/products', image: 'https://placehold.co/400x500.png', hint: 'fashion hoodie' },
+  { name: 'Full Sleeves', href: '/products', image: 'https://placehold.co/400x500.png', hint: 'long sleeve shirt' },
+  { name: 'Sweatshirts', href: '/products', image: 'https://placehold.co/400x500.png', hint: 'sweatshirt model' },
 ];
 
 async function Hero() {
   let slogan = 'Wear Your Story.';
-  // Only attempt to generate a slogan if an API key is configured.
   if (process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY) {
     try {
       const sloganData = await generateSlogan({ brandName: 'Fable Apparels' });
@@ -29,29 +27,30 @@ async function Hero() {
   }
 
   return (
-    <section className="w-full bg-primary text-primary-foreground">
+    <section className="w-full bg-background text-foreground">
       <div className="container mx-auto grid min-h-[60dvh] grid-cols-1 items-center gap-8 px-4 md:grid-cols-2 md:px-6 lg:min-h-[70dvh]">
         <div className="space-y-6 text-center md:text-left">
           <h1 className="font-headline text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl lg:text-7xl">
             FableFront
           </h1>
-          <p className="font-headline animate-pulse text-lg text-primary-foreground/80 md:text-xl">
+          <p className="font-headline text-lg text-muted-foreground md:text-xl">
             {slogan}
           </p>
-          <Button size="lg" variant="secondary" asChild className="button-fill-up">
+          <Button size="lg" asChild className="button-fill-up">
             <Link href="/products">
               Shop The Collection
               <ArrowRight className="ml-2 h-5 w-5" />
             </Link>
           </Button>
         </div>
-        <div className="relative hidden h-full w-full items-center justify-center md:flex">
+        <div className="relative hidden h-full max-h-[70vh] w-full items-center justify-center md:flex">
           <Image
             src="https://placehold.co/600x700.png"
             alt="FableFront Hero Image"
             width={600}
             height={700}
             className="rounded-lg object-cover shadow-2xl"
+            data-ai-hint="fashion model"
           />
         </div>
       </div>
@@ -77,6 +76,7 @@ function Categories() {
               width={400}
               height={500}
               className="h-full w-full object-cover transition-transform duration-300 ease-in-out group-hover:scale-105"
+              data-ai-hint={category.hint}
             />
             <div className="absolute inset-0 bg-black/40" />
             <div className="absolute inset-0 flex items-center justify-center">
