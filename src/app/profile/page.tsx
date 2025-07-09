@@ -6,14 +6,15 @@ import Link from 'next/link';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { LogoutButton } from './logout-button';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { User, ShoppingBag, Phone, Mail, Pencil, MapPin } from 'lucide-react';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { User, ShoppingBag, Phone, Mail, Pencil, MapPin, Loader2 } from 'lucide-react';
 import type { UserPayload } from '@/lib/auth';
 import { useState, useEffect } from 'react';
 
 
 export default function ProfilePage() {
   const [user, setUser] = useState<UserPayload | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
 
   useEffect(() => {
@@ -28,11 +29,21 @@ export default function ProfilePage() {
     } catch (error) {
         console.error('Invalid token', error);
         router.push('/login');
+    } finally {
+        setIsLoading(false);
     }
   }, [router]);
+  
+  if (isLoading) {
+    return (
+      <div className="flex min-h-[80vh] items-center justify-center">
+        <Loader2 className="h-16 w-16 animate-spin" />
+      </div>
+    );
+  }
 
   if (!user) {
-    return null; // Or a loading spinner
+    return null; 
   }
   
   const userInitial = user.name.charAt(0).toUpperCase();

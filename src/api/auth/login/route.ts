@@ -3,6 +3,7 @@ import dbConnect, { isDbConfigured } from '@/lib/mongodb';
 import User from '@/models/User';
 import jwt from 'jsonwebtoken';
 import { serialize } from 'cookie';
+import bcrypt from 'bcryptjs';
 
 const JWT_SECRET = process.env.JWT_SECRET;
 
@@ -25,11 +26,11 @@ export async function POST(request: Request) {
     }
 
     const user = await User.findOne({ phone }).select('+password');
-    if (!user) {
+    if (!user || !user.password) {
       return NextResponse.json({ message: 'Invalid credentials.' }, { status: 401 });
     }
 
-    const isMatch = await user.comparePassword(password);
+    const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
       return NextResponse.json({ message: 'Invalid credentials.' }, { status: 401 });
     }
@@ -41,7 +42,7 @@ export async function POST(request: Request) {
     );
 
     const cookie = serialize('token', token, {
-      httpOnly: true,
+      httpOnly: false,
       secure: process.env.NODE_ENV !== 'development',
       maxAge: 60 * 60 * 24 * 7, // 1 week
       path: '/',
