@@ -1,10 +1,11 @@
+
 'use client';
 
 import { Menu, Search, ShoppingCart, User, Shield } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
-import { Sheet, SheetContent, SheetTrigger } from './ui/sheet';
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from './ui/sheet';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { motion, useScroll, useMotionValueEvent } from 'framer-motion';
@@ -113,6 +114,9 @@ export function Header() {
                     </Button>
                 </SheetTrigger>
                 <SheetContent side="top" className="p-4">
+                    <SheetHeader className="sr-only">
+                        <SheetTitle>Search Products</SheetTitle>
+                    </SheetHeader>
                      <form onSubmit={handleSearch} className="relative w-full">
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
                         <Input
@@ -134,43 +138,47 @@ export function Header() {
                 </Button>
             </SheetTrigger>
             <SheetContent side="right">
-                <div className="flex flex-col gap-6 p-6">
-                <Link href="/" onClick={() => setSheetOpen(false)} className="flex items-center">
-                    <span className="font-headline text-xl font-bold">FableFront</span>
-                </Link>
-                <nav className="flex flex-col gap-4">
-                    {navLinks.map((link) => (
-                      <motion.div key={link.label} className="relative">
-                        <Link
-                            href={link.href}
-                            onClick={() => setSheetOpen(false)}
-                            className="block text-lg font-medium"
-                        >
-                            {link.label}
+                <SheetHeader>
+                    <SheetTitle asChild>
+                         <Link href="/" onClick={() => setSheetOpen(false)} className="flex items-center">
+                            <span className="font-headline text-xl font-bold">FableFront</span>
                         </Link>
-                      </motion.div>
-                    ))}
-                </nav>
-                 <div className="flex items-center gap-4 border-t pt-6">
-                    <Button variant="ghost" size="icon" className="w-auto px-2 justify-start gap-2" asChild>
-                        <Link href="/admin/dashboard" onClick={() => setSheetOpen(false)}>
-                            <Shield className="h-5 w-5" />
-                            <span>Admin</span>
-                        </Link>
-                    </Button>
-                    <Button variant="ghost" size="icon" className="w-auto px-2 justify-start gap-2" asChild>
-                        <Link href="/profile" onClick={() => setSheetOpen(false)}>
-                            <User className="h-5 w-5" />
-                            <span>Profile</span>
-                        </Link>
-                    </Button>
-                    <Button variant="ghost" size="icon" className="w-auto px-2 justify-start gap-2" asChild>
-                         <Link href="/cart" onClick={() => setSheetOpen(false)}>
-                            <ShoppingCart className="h-5 w-5" />
-                            <span>Cart</span>
-                        </Link>
-                    </Button>
-                 </div>
+                    </SheetTitle>
+                </SheetHeader>
+                <div className="flex flex-col h-full">
+                    <nav className="mt-6 flex flex-col gap-4">
+                        {navLinks.map((link) => (
+                        <motion.div key={link.label} className="relative">
+                            <Link
+                                href={link.href}
+                                onClick={() => setSheetOpen(false)}
+                                className="block text-lg font-medium"
+                            >
+                                {link.label}
+                            </Link>
+                        </motion.div>
+                        ))}
+                    </nav>
+                    <div className="mt-auto flex items-center gap-4 border-t pt-6">
+                        <Button variant="ghost" size="icon" className="w-auto px-2 justify-start gap-2" asChild>
+                            <Link href="/admin/dashboard" onClick={() => setSheetOpen(false)}>
+                                <Shield className="h-5 w-5" />
+                                <span>Admin</span>
+                            </Link>
+                        </Button>
+                        <Button variant="ghost" size="icon" className="w-auto px-2 justify-start gap-2" asChild>
+                            <Link href="/profile" onClick={() => setSheetOpen(false)}>
+                                <User className="h-5 w-5" />
+                                <span>Profile</span>
+                            </Link>
+                        </Button>
+                        <Button variant="ghost" size="icon" className="w-auto px-2 justify-start gap-2" asChild>
+                            <Link href="/cart" onClick={() => setSheetOpen(false)}>
+                                <ShoppingCart className="h-5 w-5" />
+                                <span>Cart</span>
+                            </Link>
+                        </Button>
+                    </div>
                 </div>
             </SheetContent>
             </Sheet>
