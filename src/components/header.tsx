@@ -18,6 +18,7 @@ const navLinks = [
 export function Header() {
   const router = useRouter();
   const [isSheetOpen, setSheetOpen] = useState(false);
+  const [isSearchOpen, setSearchOpen] = useState(false);
   const [hidden, setHidden] = useState(false);
   const { scrollY } = useScroll();
 
@@ -37,6 +38,7 @@ export function Header() {
     if (query.trim()) {
       router.push(`/search?q=${encodeURIComponent(query.trim())}`);
       setSheetOpen(false);
+      setSearchOpen(false);
     }
   };
 
@@ -103,6 +105,27 @@ export function Header() {
         </div>
 
         <div className="flex items-center gap-2 md:hidden">
+            <Sheet open={isSearchOpen} onOpenChange={setSearchOpen}>
+                <SheetTrigger asChild>
+                    <Button variant="ghost" size="icon">
+                        <Search className="h-6 w-6" />
+                        <span className="sr-only">Search</span>
+                    </Button>
+                </SheetTrigger>
+                <SheetContent side="top" className="p-4">
+                     <form onSubmit={handleSearch} className="relative w-full">
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                        <Input
+                            name="q"
+                            type="search"
+                            placeholder="Search products..."
+                            className="w-full h-12 pl-10 text-lg"
+                            autoFocus
+                        />
+                    </form>
+                </SheetContent>
+            </Sheet>
+
             <Sheet open={isSheetOpen} onOpenChange={setSheetOpen}>
             <SheetTrigger asChild>
                 <Button variant="ghost" size="icon">
@@ -115,10 +138,6 @@ export function Header() {
                 <Link href="/" onClick={() => setSheetOpen(false)} className="flex items-center">
                     <span className="font-headline text-xl font-bold">FableFront</span>
                 </Link>
-                <form onSubmit={handleSearch} className="relative w-full">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                    <Input name="q" type="search" placeholder="Search products..." className="w-full pl-9" />
-                </form>
                 <nav className="flex flex-col gap-4">
                     {navLinks.map((link) => (
                       <motion.div key={link.label} className="relative">
