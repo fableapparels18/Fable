@@ -105,7 +105,7 @@ export function Header() {
         </div>
 
         <div className="flex items-center gap-2 md:hidden">
-            <Sheet open={isSearchOpen} onOpenChange={setSearchOpen}>
+            <Sheet key="search-sheet" open={isSearchOpen} onOpenChange={setSearchOpen}>
                 <SheetTrigger asChild>
                     <Button variant="ghost" size="icon">
                         <Search className="h-6 w-6" />
@@ -126,7 +126,7 @@ export function Header() {
                 </SheetContent>
             </Sheet>
 
-            <Sheet open={isSheetOpen} onOpenChange={setSheetOpen}>
+            <Sheet key="menu-sheet" open={isSheetOpen} onOpenChange={setSheetOpen}>
             <SheetTrigger asChild>
                 <Button variant="ghost" size="icon">
                 <Menu className="h-6 w-6" />
@@ -142,7 +142,6 @@ export function Header() {
                     {navLinks.map((link) => (
                       <motion.div key={link.label} className="relative">
                         <Link
-                            key={link.label}
                             href={link.href}
                             onClick={() => setSheetOpen(false)}
                             className="block text-lg font-medium"
