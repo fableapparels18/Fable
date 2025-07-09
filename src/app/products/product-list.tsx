@@ -5,11 +5,7 @@ import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import type { Product } from '@/models/Product';
 import { ProductCard } from '@/components/product-card';
 import { SortOptions } from './sort-options';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-
-const CATEGORIES = ['Oversized', 'Hoodie', 'Full Sleeves', 'Half Sleeves', 'Sweatshirt'] as const;
+import { ProductFilters } from './product-filters';
 
 type ProductListProps = {
     initialProducts: Product[];
@@ -23,12 +19,14 @@ export function ProductList({ initialProducts }: ProductListProps) {
     const selectedCategories = useMemo(() => searchParams.get('categories')?.split(',').filter(Boolean) || [], [searchParams]);
     const sortOption = useMemo(() => searchParams.get('sort') || 'date-desc', [searchParams]);
 
-    const handleCategoryChange = (category: string, checked: boolean | 'indeterminate') => {
+    const handleCategoryChange = (category: string, checked: boolean) => {
         const params = new URLSearchParams(searchParams.toString());
         let currentCategories = params.get('categories')?.split(',').filter(Boolean) || [];
         
-        if (checked === true) {
-            currentCategories.push(category);
+        if (checked) {
+            if (!currentCategories.includes(category)) {
+                currentCategories.push(category);
+            }
         } else {
             currentCategories = currentCategories.filter(c => c !== category);
         }
@@ -65,55 +63,38 @@ export function ProductList({ initialProducts }: ProductListProps) {
     }, [initialProducts, selectedCategories, sortOption]);
 
     return (
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 items-start">
-            <aside className="lg:col-span-1 lg:sticky lg:top-24">
-                <Card>
-                    <CardHeader>
-                        <CardTitle>Categories</CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                        {CATEGORIES.map(category => (
-                            <div key={category} className="flex items-center space-x-2">
-                                <Checkbox 
-                                    id={category} 
-                                    checked={selectedCategories.includes(category)}
-                                    onCheckedChange={(checked) => handleCategoryChange(category, checked)}
-                                />
-                                <Label htmlFor={category} className="font-normal cursor-pointer">{category}</Label>
-                            </div>
-                        ))}
-                    </CardContent>
-                </Card>
-            </aside>
-
-            <main className="lg:col-span-3">
-                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
-                    <div>
-                        <h1 className="font-headline text-4xl font-bold tracking-tight">
-                            All Products
-                        </h1>
-                        <p className="mt-2 text-lg text-muted-foreground">
-                            Explore our complete collection of modern apparel.
-                        </p>
-                    </div>
-                    <SortOptions />
+        <div className="space-y-8">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                <div>
+                    <h1 className="font-headline text-4xl font-bold tracking-tight">
+                        All Products
+                    </h1>
+                    <p className="mt-2 text-lg text-muted-foreground">
+                        Explore our complete collection of modern apparel.
+                    </p>
                 </div>
-                
-                {filteredAndSortedProducts.length > 0 ? (
-                     <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-3">
-                        {filteredAndSortedProducts.map(product => (
-                            <ProductCard key={product._id} product={product} />
-                        ))}
-                    </div>
-                ) : (
-                    <div className="flex flex-col items-center justify-center rounded-lg border-2 border-dashed border-muted bg-card p-12 text-center col-span-full h-96">
-                        <h2 className="text-xl font-semibold">No Products Found</h2>
-                        <p className="mt-2 text-muted-foreground">
-                            Try adjusting your filters or check back later.
-                        </p>
-                    </div>
-                )}
-            </main>
+                <SortOptions />
+            </div>
+            
+            <ProductFilters 
+                selectedCategories={selectedCategories}
+                onCategoryChange={handleCategoryChange}
+            />
+
+            {filteredAndSortedProducts.length > 0 ? (
+                    <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                    {filteredAndSortedProducts.map(product => (
+                        <ProductCard key={product._id} product={product} />
+                    ))}
+                </div>
+            ) : (
+                <div className="flex flex-col items-center justify-center rounded-lg border-2 border-dashed border-muted bg-card p-12 text-center h-96">
+                    <h2 className="text-xl font-semibold">No Products Found</h2>
+                    <p className="mt-2 text-muted-foreground">
+                        Try adjusting your filters or check back later.
+                    </p>
+                </div>
+            )}
         </div>
     );
 }
