@@ -12,6 +12,8 @@ export interface Product {
     fabricAndCare: string;
     isTrending: boolean;
     isNew: boolean;
+    createdAt: string;
+    updatedAt: string;
   }
 
 export interface IProduct extends Product, Document {}
