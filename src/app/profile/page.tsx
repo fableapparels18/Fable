@@ -1,6 +1,6 @@
 'use client';
 
-import { redirect } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import jwt from 'jsonwebtoken';
 import Link from 'next/link';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -14,20 +14,22 @@ import { useState, useEffect } from 'react';
 
 export default function ProfilePage() {
   const [user, setUser] = useState<UserPayload | null>(null);
+  const router = useRouter();
 
   useEffect(() => {
     const token = document.cookie.split('; ').find(row => row.startsWith('token='))?.split('=')[1];
     if (!token) {
-        redirect('/login');
+        router.push('/login');
+        return;
     }
     try {
         const decoded = jwt.decode(token) as UserPayload;
         setUser(decoded);
     } catch (error) {
         console.error('Invalid token', error);
-        redirect('/login');
+        router.push('/login');
     }
-  }, []);
+  }, [router]);
 
   if (!user) {
     return null; // Or a loading spinner
