@@ -3,7 +3,7 @@
 import { NextResponse } from 'next/server';
 import dbConnect, { isDbConfigured } from '@/lib/mongodb';
 import User from '@/models/User';
-import Otp from '@/models/Otp';
+import { sendVerificationOtp, isTwilioConfigured } from '@/lib/twilio';
 
 export async function POST(request: Request) {
     if (!isDbConfigured) {
@@ -12,33 +12,38 @@ export async function POST(request: Request) {
 
     try {
         await dbConnect();
-        const { phone } = await request.json();
+        const { phone, isPasswordReset } = await request.json();
 
         if (!phone) {
             return NextResponse.json({ message: 'Phone number is required' }, { status: 400 });
         }
 
         const user = await User.findOne({ phone });
-        if (user) {
-            return NextResponse.json({ message: 'A user with this phone number already exists.' }, { status: 409 });
+
+        if (isPasswordReset) {
+            if (!user) {
+                return NextResponse.json({ message: 'No account found with this phone number.' }, { status: 404 });
+            }
+        } else {
+             if (user) {
+                return NextResponse.json({ message: 'A user with this phone number already exists.' }, { status: 409 });
+            }
         }
 
-        const otp = Math.floor(100000 + Math.random() * 900000).toString();
-        
-        await Otp.findOneAndUpdate(
-            { phone },
-            { phone, otp, createdAt: new Date() },
-            { upsert: true, new: true, setDefaultsOnInsert: true }
-        );
+        if (isTwilioConfigured) {
+            const result = await sendVerificationOtp(phone);
+            if (!result.success) {
+                return NextResponse.json({ message: result.message }, { status: 500 });
+            }
+        } else {
+            console.log(`\n\n--- FableFront OTP Service (For Development) ---`);
+            console.log(`Twilio is not configured. OTP cannot be sent.`);
+            console.log(`Please configure Twilio credentials in your .env file.`);
+            console.log(`---------------------------------------------------\n\n`);
+            return NextResponse.json({ message: 'SMS service is not configured.' }, { status: 503 });
+        }
 
-        // --- MOCK OTP SENDING ---
-        console.log(`\n\n--- FableFront Registration OTP ---`);
-        console.log(`OTP for ${phone}: ${otp}`);
-        console.log(`This will expire in 5 minutes.`);
-        console.log(`-----------------------------------\n\n`);
-        // -------------------------
-
-        return NextResponse.json({ message: 'OTP sent successfully.' });
+        return NextResponse.json({ message: 'An OTP has been sent to your phone number.' });
     } catch (error: any) {
         console.error('Send OTP error:', error);
         return NextResponse.json({ message: 'An error occurred while sending the OTP.' }, { status: 500 });
