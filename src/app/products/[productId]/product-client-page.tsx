@@ -20,8 +20,6 @@ import { Textarea } from '@/components/ui/textarea';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { formatDistanceToNow } from 'date-fns';
 import { Card, CardContent } from '@/components/ui/card';
-import jwt from 'jsonwebtoken';
-import type { UserPayload } from '@/lib/auth';
 
 
 function FeedbackForm({ productId, onFeedbackSubmitted }: { productId: string, onFeedbackSubmitted: () => void }) {
@@ -135,22 +133,15 @@ type ProductClientPageProps = {
 
 export function ProductClientPage({ productId, initialProduct: product, initialFeedback: feedback }: ProductClientPageProps) {
   const router = useRouter();
-  const [user, setUser] = useState<UserPayload | null>(null);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
   const [isAdding, setIsAdding] = useState(false);
   const { toast } = useToast();
   
   useEffect(() => {
-    // Check for user token on mount
-    const token = document.cookie.split('; ').find(row => row.startsWith('token='))?.split('=')[1];
-    if (token) {
-        try {
-            const payload = jwt.decode(token) as UserPayload;
-            setUser(payload);
-        } catch (e) {
-            console.error("Failed to decode token", e)
-        }
-    }
+    // Check if the auth cookie exists. No need to decode, just check for presence.
+    const token = document.cookie.split('; ').find(row => row.startsWith('token='));
+    setIsLoggedIn(!!token);
   }, []);
   
   const handleAddToCart = async () => {
@@ -162,6 +153,17 @@ export function ProductClientPage({ productId, initialProduct: product, initialF
       });
       return;
     }
+
+    if (!isLoggedIn) {
+        toast({
+            variant: 'destructive',
+            title: 'Please Log In',
+            description: 'You must be logged in to add items to your cart.',
+        });
+        router.push('/login');
+        return;
+    }
+
     setIsAdding(true);
     try {
       const response = await fetch('/api/cart', {
@@ -265,7 +267,7 @@ export function ProductClientPage({ productId, initialProduct: product, initialF
             <FeedbackList feedback={feedback} />
         </div>
         <div className="md:col-span-1">
-            {user ? (
+            {isLoggedIn ? (
                 <FeedbackForm productId={productId} onFeedbackSubmitted={() => router.refresh()} />
             ) : (
                 <Card>
@@ -273,7 +275,7 @@ export function ProductClientPage({ productId, initialProduct: product, initialF
                         <h3 className="text-lg font-semibold">Want to share your thoughts?</h3>
                         <p className="text-muted-foreground mt-2">Please log in to leave a review.</p>
                         <Button asChild className="mt-4">
-                            <a href="/login">Log In</a>
+                            <Link href="/login">Log In</Link>
                         </Button>
                     </CardContent>
                 </Card>

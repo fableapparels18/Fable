@@ -1,49 +1,35 @@
-'use client';
-
-import { useRouter } from 'next/navigation';
+import { redirect } from 'next/navigation';
+import { cookies } from 'next/headers';
 import jwt from 'jsonwebtoken';
 import Link from 'next/link';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { LogoutButton } from './logout-button';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { User, ShoppingBag, Phone, Mail, Pencil, MapPin, Loader2 } from 'lucide-react';
+import { User, ShoppingBag, Phone, Mail, Pencil, MapPin } from 'lucide-react';
 import type { UserPayload } from '@/lib/auth';
-import { useState, useEffect } from 'react';
 
 
-export default function ProfilePage() {
-  const [user, setUser] = useState<UserPayload | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const router = useRouter();
-
-  useEffect(() => {
-    const token = document.cookie.split('; ').find(row => row.startsWith('token='))?.split('=')[1];
+async function getUserFromToken(): Promise<UserPayload | null> {
+    const token = cookies().get('token')?.value;
     if (!token) {
-        router.push('/login');
-        return;
+        return null;
     }
     try {
-        const decoded = jwt.decode(token) as UserPayload;
-        setUser(decoded);
+        // The middleware has already verified the token, so we can safely decode it.
+        return jwt.decode(token) as UserPayload;
     } catch (error) {
-        console.error('Invalid token', error);
-        router.push('/login');
-    } finally {
-        setIsLoading(false);
+        console.error('Invalid token on profile page:', error);
+        return null;
     }
-  }, [router]);
-  
-  if (isLoading) {
-    return (
-      <div className="flex min-h-[80vh] items-center justify-center">
-        <Loader2 className="h-16 w-16 animate-spin" />
-      </div>
-    );
-  }
+}
+
+
+export default async function ProfilePage() {
+  const user = await getUserFromToken();
 
   if (!user) {
-    return null; 
+    redirect('/login');
   }
   
   const userInitial = user.name.charAt(0).toUpperCase();

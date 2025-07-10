@@ -33,7 +33,13 @@ export default function CartPage() {
       setIsLoading(true);
       const res = await fetch('/api/cart');
       if (!res.ok) {
-        throw new Error('Failed to fetch cart');
+        const errorData = await res.json();
+        // Redirect to login if unauthorized
+        if (res.status === 401) {
+            window.location.href = '/login';
+            return;
+        }
+        throw new Error(errorData.message || 'Failed to fetch cart');
       }
       const data = await res.json();
       setCart(data);
