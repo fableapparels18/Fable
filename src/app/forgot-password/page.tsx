@@ -65,7 +65,6 @@ export default function ForgotPasswordPage() {
       setPhone(data.phone);
       setStage('otp');
       toast({ title: 'OTP Sent', description: 'An OTP has been sent to your phone.' });
-      phoneForm.reset();
     } catch (error: any) {
       toast({ variant: 'destructive', title: 'Error', description: error.message });
     } finally {
