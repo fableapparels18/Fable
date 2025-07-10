@@ -5,6 +5,15 @@ import dbConnect, { isDbConfigured } from '@/lib/mongodb';
 import User from '@/models/User';
 import { sendVerificationOtp, isTwilioConfigured } from '@/lib/twilio';
 
+// Helper to normalize phone number
+const normalizePhone = (phone: string): string => {
+  if (phone.startsWith('+')) {
+    return phone;
+  }
+  return `+91${phone}`;
+};
+
+
 export async function POST(request: Request) {
     if (!isDbConfigured) {
         return NextResponse.json({ message: 'Database not configured. Authentication is disabled.' }, { status: 503 });
@@ -18,7 +27,8 @@ export async function POST(request: Request) {
             return NextResponse.json({ message: 'Phone number is required' }, { status: 400 });
         }
 
-        const user = await User.findOne({ phone });
+        const normalizedPhone = normalizePhone(phone);
+        const user = await User.findOne({ phone: normalizedPhone });
 
         if (isPasswordReset) {
             if (!user) {
@@ -31,7 +41,7 @@ export async function POST(request: Request) {
         }
 
         if (isTwilioConfigured) {
-            const result = await sendVerificationOtp(phone);
+            const result = await sendVerificationOtp(normalizedPhone);
             if (!result.success) {
                 return NextResponse.json({ message: result.message }, { status: 500 });
             }

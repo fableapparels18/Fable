@@ -6,6 +6,14 @@ import User from '@/models/User';
 
 const JWT_SECRET = process.env.JWT_SECRET;
 
+// Helper to normalize phone number
+const normalizePhone = (phone: string): string => {
+  if (phone.startsWith('+')) {
+    return phone;
+  }
+  return `+91${phone}`;
+};
+
 export async function POST(request: Request) {
   if (!isDbConfigured) {
     return NextResponse.json({ message: 'Database not configured. Registration is disabled.' }, { status: 503 });
@@ -25,8 +33,10 @@ export async function POST(request: Request) {
       return NextResponse.json({ message: 'Name, phone, and password are required' }, { status: 400 });
     }
     
+    const normalizedPhone = normalizePhone(phone);
+
     // Check for existing users
-    const existingUserByPhone = await User.findOne({ phone });
+    const existingUserByPhone = await User.findOne({ phone: normalizedPhone });
     if (existingUserByPhone) {
       return NextResponse.json({ message: 'A user with this phone number already exists' }, { status: 409 });
     }
@@ -38,14 +48,14 @@ export async function POST(request: Request) {
       }
     }
     
-    const userData: any = { name, phone, password };
+    const userData: any = { name, phone: normalizedPhone, password };
     if (email) {
         userData.email = email;
     }
 
     const newUser = new User(userData);
     await newUser.save();
-
+    
     // Auto-login: Create token and set cookie
     const token = jwt.sign(
       { userId: newUser._id, email: newUser.email, name: newUser.name, phone: newUser.phone },

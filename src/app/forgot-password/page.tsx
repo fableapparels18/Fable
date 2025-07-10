@@ -15,7 +15,7 @@ import { Loader2 } from 'lucide-react';
 import Link from 'next/link';
 
 const PhoneSchema = z.object({
-  phone: z.string().min(10, 'Please enter a valid phone number including country code (e.g., +1... or +91...).'),
+  phone: z.string().min(10, 'Please enter a valid 10-digit phone number.'),
 });
 
 const OTPSchema = z.object({
@@ -27,6 +27,14 @@ const NewPasswordSchema = z.object({
 });
 
 type Stage = 'phone' | 'otp' | 'password';
+
+// Helper to normalize phone number
+const normalizePhone = (phone: string): string => {
+  if (phone.startsWith('+')) {
+    return phone;
+  }
+  return `+91${phone}`;
+};
 
 export default function ForgotPasswordPage() {
   const router = useRouter();
@@ -61,7 +69,7 @@ export default function ForgotPasswordPage() {
       const resData = await res.json();
       if (!res.ok) throw new Error(resData.message);
       
-      setPhone(data.phone);
+      setPhone(normalizePhone(data.phone));
       setStage('otp');
       toast({ title: 'OTP Sent', description: 'An OTP has been sent to your phone.' });
     } catch (error: any) {
@@ -126,7 +134,7 @@ export default function ForgotPasswordPage() {
                     <FormItem>
                       <Label>Phone Number</Label>
                       <FormControl>
-                        <Input placeholder="Enter phone number with country code" {...field} />
+                        <Input placeholder="Enter your 10-digit phone number" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
