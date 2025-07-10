@@ -15,7 +15,7 @@ import { Loader2 } from 'lucide-react';
 import Link from 'next/link';
 
 const PhoneSchema = z.object({
-  phone: z.string().min(10, 'Please enter a valid phone number.'),
+  phone: z.string().min(10, 'Please enter a valid phone number including country code (e.g., +1... or +91...).'),
 });
 
 const OTPSchema = z.object({
@@ -63,7 +63,7 @@ export default function ForgotPasswordPage() {
       
       setPhone(data.phone);
       setStage('otp');
-      toast({ title: 'OTP Sent', description: 'Please check the console for your OTP.' });
+      toast({ title: 'OTP Sent', description: 'An OTP has been sent to your phone.' });
     } catch (error: any) {
       toast({ variant: 'destructive', title: 'Error', description: error.message });
     } finally {
@@ -126,7 +126,7 @@ export default function ForgotPasswordPage() {
                     <FormItem>
                       <Label>Phone Number</Label>
                       <FormControl>
-                        <Input placeholder="Enter your registered phone number" {...field} />
+                        <Input placeholder="Enter phone number with country code" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>

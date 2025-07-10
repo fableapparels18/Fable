@@ -3,7 +3,8 @@
 import { NextResponse } from 'next/server';
 import dbConnect, { isDbConfigured } from '@/lib/mongodb';
 import User from '@/models/User';
-import Otp from '@/models/Otp';
+import { verifyOtp } from '@/lib/twilio';
+
 
 export async function POST(request: Request) {
     if (!isDbConfigured) {
@@ -18,9 +19,9 @@ export async function POST(request: Request) {
             return NextResponse.json({ message: 'Phone, OTP, and new password are required.' }, { status: 400 });
         }
 
-        // 1. Verify OTP
-        const otpDoc = await Otp.findOne({ phone, otp });
-        if (!otpDoc) {
+        // 1. Verify OTP with Twilio
+        const otpResult = await verifyOtp(phone, otp);
+        if (!otpResult.success) {
             return NextResponse.json({ message: 'Invalid or expired OTP.' }, { status: 400 });
         }
         
@@ -33,9 +34,6 @@ export async function POST(request: Request) {
         // 3. Update password
         user.password = newPassword;
         await user.save();
-
-        // 4. Delete the used OTP
-        await Otp.deleteOne({ _id: otpDoc._id });
         
         return NextResponse.json({ message: 'Password has been reset successfully.' });
 

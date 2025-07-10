@@ -2,27 +2,50 @@ import twilio from 'twilio';
 
 const accountSid = process.env.TWILIO_ACCOUNT_SID;
 const authToken = process.env.TWILIO_AUTH_TOKEN;
-const twilioPhoneNumber = process.env.TWILIO_PHONE_NUMBER;
+const verifyServiceSid = process.env.TWILIO_VERIFY_SERVICE_SID;
 
-export const isTwilioConfigured = !!(accountSid && authToken && twilioPhoneNumber);
+export const isTwilioConfigured = !!(accountSid && authToken && verifyServiceSid);
 
 const client = isTwilioConfigured ? twilio(accountSid, authToken) : null;
 
-export async function sendOtpSms(to: string, otp: string): Promise<void> {
-    if (!client || !twilioPhoneNumber) {
-        throw new Error('Twilio is not configured. Please check your environment variables.');
+export async function sendVerificationOtp(to: string): Promise<{ success: boolean; message: string }> {
+    if (!client || !verifyServiceSid) {
+        throw new Error('Twilio Verify is not configured. Please check your environment variables.');
     }
 
     try {
-        await client.messages.create({
-            body: `Your FableFront verification code is: ${otp}`,
-            from: twilioPhoneNumber,
-            to: to,
-        });
-        console.log(`OTP SMS sent to ${to}`);
-    } catch (error) {
-        console.error('Failed to send OTP SMS via Twilio:', error);
-        // Depending on requirements, you might want to re-throw or handle this differently
-        throw new Error('Could not send verification code.');
+        await client.verify.v2.services(verifyServiceSid)
+            .verifications
+            .create({ to: to, channel: 'sms' });
+        
+        console.log(`Twilio Verify OTP sent to ${to}`);
+        return { success: true, message: 'OTP sent successfully.' };
+    } catch (error: any) {
+        console.error('Failed to send OTP via Twilio Verify:', error);
+        return { success: false, message: error.message || 'Could not send verification code.' };
+    }
+}
+
+export async function verifyOtp(to: string, code: string): Promise<{ success: boolean; message: string }> {
+    if (!client || !verifyServiceSid) {
+        throw new Error('Twilio Verify is not configured. Please check your environment variables.');
+    }
+
+    try {
+        const verificationCheck = await client.verify.v2.services(verifyServiceSid)
+            .verificationChecks
+            .create({ to: to, code: code });
+
+        if (verificationCheck.status === 'approved') {
+            return { success: true, message: 'OTP verified successfully.' };
+        } else {
+            return { success: false, message: 'Invalid OTP.' };
+        }
+    } catch (error: any) {
+        console.error('Failed to verify OTP with Twilio:', error);
+        if (error.code === 20404) { // "Invalid parameter: Code"
+            return { success: false, message: 'Invalid or expired OTP.' };
+        }
+        return { success: false, message: 'An error occurred during verification.' };
     }
 }

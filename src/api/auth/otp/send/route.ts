@@ -3,8 +3,7 @@
 import { NextResponse } from 'next/server';
 import dbConnect, { isDbConfigured } from '@/lib/mongodb';
 import User from '@/models/User';
-import Otp from '@/models/Otp';
-import { sendOtpSms, isTwilioConfigured } from '@/lib/twilio';
+import { sendVerificationOtp, isTwilioConfigured } from '@/lib/twilio';
 
 export async function POST(request: Request) {
     if (!isDbConfigured) {
@@ -31,26 +30,20 @@ export async function POST(request: Request) {
             }
         }
 
-        const otp = Math.floor(100000 + Math.random() * 900000).toString();
-        
-        await Otp.findOneAndUpdate(
-            { phone },
-            { phone, otp, createdAt: new Date() },
-            { upsert: true, new: true, setDefaultsOnInsert: true }
-        );
-
         if (isTwilioConfigured) {
-            await sendOtpSms(phone, otp);
+            const result = await sendVerificationOtp(phone);
+            if (!result.success) {
+                return NextResponse.json({ message: result.message }, { status: 500 });
+            }
         } else {
-            // Fallback for development if Twilio is not configured
             console.log(`\n\n--- FableFront OTP Service (For Development) ---`);
-            console.log(`OTP for ${phone}: ${otp}`);
-            console.log(`This will expire in 5 minutes.`);
-            console.log(`In a production app, this would be sent via a real SMS service.`);
+            console.log(`Twilio is not configured. OTP cannot be sent.`);
+            console.log(`Please configure Twilio credentials in your .env file.`);
             console.log(`---------------------------------------------------\n\n`);
+            return NextResponse.json({ message: 'SMS service is not configured.' }, { status: 503 });
         }
 
-        return NextResponse.json({ message: 'OTP sent successfully.' });
+        return NextResponse.json({ message: 'An OTP has been sent to your phone number.' });
     } catch (error: any) {
         console.error('Send OTP error:', error);
         return NextResponse.json({ message: 'An error occurred while sending the OTP.' }, { status: 500 });
