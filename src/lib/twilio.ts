@@ -8,17 +8,29 @@ export const isTwilioConfigured = !!(accountSid && authToken && verifyServiceSid
 
 const client = isTwilioConfigured ? twilio(accountSid, authToken) : null;
 
+// Helper to normalize phone number to E.164 format for Twilio
+const normalizePhoneForTwilio = (phone: string): string => {
+  if (phone.startsWith('+')) {
+    return phone;
+  }
+  // Assuming Indian numbers if no country code is provided
+  return `+91${phone}`;
+};
+
+
 export async function sendVerificationOtp(to: string): Promise<{ success: boolean; message: string }> {
     if (!client || !verifyServiceSid) {
         throw new Error('Twilio Verify is not configured. Please check your environment variables.');
     }
 
+    const normalizedPhone = normalizePhoneForTwilio(to);
+
     try {
         await client.verify.v2.services(verifyServiceSid)
             .verifications
-            .create({ to: to, channel: 'sms' });
+            .create({ to: normalizedPhone, channel: 'sms' });
         
-        console.log(`Twilio Verify OTP sent to ${to}`);
+        console.log(`Twilio Verify OTP sent to ${normalizedPhone}`);
         return { success: true, message: 'OTP sent successfully.' };
     } catch (error: any) {
         console.error('Failed to send OTP via Twilio Verify:', error);
@@ -30,11 +42,13 @@ export async function verifyOtp(to: string, code: string): Promise<{ success: bo
     if (!client || !verifyServiceSid) {
         throw new Error('Twilio Verify is not configured. Please check your environment variables.');
     }
+    
+    const normalizedPhone = normalizePhoneForTwilio(to);
 
     try {
         const verificationCheck = await client.verify.v2.services(verifyServiceSid)
             .verificationChecks
-            .create({ to: to, code: code });
+            .create({ to: normalizedPhone, code: code });
 
         if (verificationCheck.status === 'approved') {
             return { success: true, message: 'OTP verified successfully.' };
