@@ -22,7 +22,7 @@ export default async function ManageAddressesPage() {
                     <AddAddressDialog />
                 </CardHeader>
                 <CardContent>
-                    <AddressList addresses={user.addresses} />
+                    <AddressList addresses={user.addresses || []} />
                 </CardContent>
             </Card>
         </div>
