@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -27,14 +28,6 @@ const NewPasswordSchema = z.object({
 });
 
 type Stage = 'phone' | 'otp' | 'password';
-
-// Helper to normalize phone number
-const normalizePhone = (phone: string): string => {
-  if (phone.startsWith('+')) {
-    return phone;
-  }
-  return `+91${phone}`;
-};
 
 export default function ForgotPasswordPage() {
   const router = useRouter();
@@ -69,7 +62,7 @@ export default function ForgotPasswordPage() {
       const resData = await res.json();
       if (!res.ok) throw new Error(resData.message);
       
-      setPhone(normalizePhone(data.phone));
+      setPhone(data.phone);
       setStage('otp');
       toast({ title: 'OTP Sent', description: 'An OTP has been sent to your phone.' });
       phoneForm.reset();
@@ -162,7 +155,14 @@ export default function ForgotPasswordPage() {
                     <FormItem>
                       <Label>Enter OTP</Label>
                        <FormControl>
-                        <Input type="number" placeholder="6-digit OTP" {...field} />
+                        <Input
+                          type="text"
+                          maxLength={6}
+                          inputMode="numeric"
+                          pattern="[0-9]*"
+                          placeholder="6-digit OTP"
+                          {...field}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
