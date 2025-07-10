@@ -3,6 +3,7 @@ import jwt from 'jsonwebtoken';
 import { serialize } from 'cookie';
 import dbConnect, { isDbConfigured } from '@/lib/mongodb';
 import User from '@/models/User';
+import Otp from '@/models/Otp';
 
 const JWT_SECRET = process.env.JWT_SECRET;
 
@@ -19,12 +20,19 @@ export async function POST(request: Request) {
   await dbConnect();
 
   try {
-    const { name, phone, email, password } = await request.json();
+    const { name, phone, email, password, otp } = await request.json();
 
-    if (!name || !phone || !password) {
-      return NextResponse.json({ message: 'Name, phone, and password are required' }, { status: 400 });
+    if (!name || !phone || !password || !otp) {
+      return NextResponse.json({ message: 'Name, phone, password, and OTP are required' }, { status: 400 });
     }
 
+    // Verify OTP
+    const otpDoc = await Otp.findOne({ phone, otp });
+    if (!otpDoc) {
+        return NextResponse.json({ message: 'Invalid or expired OTP.' }, { status: 400 });
+    }
+    
+    // Check for existing users *again* as a safeguard
     const existingUserByPhone = await User.findOne({ phone });
     if (existingUserByPhone) {
       return NextResponse.json({ message: 'A user with this phone number already exists' }, { status: 409 });
@@ -44,6 +52,9 @@ export async function POST(request: Request) {
 
     const newUser = new User(userData);
     await newUser.save();
+
+    // Delete the used OTP
+    await Otp.deleteOne({ _id: otpDoc._id });
     
     // Auto-login: Create token and set cookie
     const token = jwt.sign(
