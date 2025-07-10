@@ -40,10 +40,11 @@ export async function POST(request: Request) {
         );
 
         // --- MOCK OTP SENDING ---
-        console.log(`\n\n--- FableFront OTP Service ---`);
+        console.log(`\n\n--- FableFront OTP Service (For Development) ---`);
         console.log(`OTP for ${phone}: ${otp}`);
         console.log(`This will expire in 5 minutes.`);
-        console.log(`------------------------------\n\n`);
+        console.log(`In a production app, this would be sent via a real SMS service.`);
+        console.log(`---------------------------------------------------\n\n`);
         // -------------------------
 
         return NextResponse.json({ message: 'OTP sent successfully.' });
