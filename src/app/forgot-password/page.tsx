@@ -33,8 +33,11 @@ export default function ForgotPasswordPage() {
   const router = useRouter();
   const { toast } = useToast();
   const [stage, setStage] = useState<Stage>('phone');
-  const [isLoading, setIsLoading] = useState(false);
   const [phone, setPhone] = useState('');
+
+  const [isSendingOtp, setIsSendingOtp] = useState(false);
+  const [isVerifyingOtp, setIsVerifyingOtp] = useState(false);
+  const [isResettingPassword, setIsResettingPassword] = useState(false);
 
   const phoneForm = useForm<z.infer<typeof PhoneSchema>>({
     resolver: zodResolver(PhoneSchema),
@@ -52,7 +55,7 @@ export default function ForgotPasswordPage() {
   });
 
   const handleSendOtp = async (data: z.infer<typeof PhoneSchema>) => {
-    setIsLoading(true);
+    setIsSendingOtp(true);
     try {
       const res = await fetch('/api/auth/otp/send', {
         method: 'POST',
@@ -68,12 +71,12 @@ export default function ForgotPasswordPage() {
     } catch (error: any) {
       toast({ variant: 'destructive', title: 'Error', description: error.message });
     } finally {
-      setIsLoading(false);
+      setIsSendingOtp(false);
     }
   };
 
   const handleVerifyOtp = async (data: z.infer<typeof OTPSchema>) => {
-    setIsLoading(true);
+    setIsVerifyingOtp(true);
     try {
         const res = await fetch('/api/auth/otp/verify', {
             method: 'POST',
@@ -88,12 +91,12 @@ export default function ForgotPasswordPage() {
     } catch (error: any) {
         toast({ variant: 'destructive', title: 'Error', description: error.message });
     } finally {
-        setIsLoading(false);
+        setIsVerifyingOtp(false);
     }
   };
 
   const handleResetPassword = async (data: z.infer<typeof NewPasswordSchema>) => {
-    setIsLoading(true);
+    setIsResettingPassword(true);
     const otp = otpForm.getValues('otp');
      try {
         const res = await fetch('/api/auth/reset-password', {
@@ -109,7 +112,7 @@ export default function ForgotPasswordPage() {
     } catch (error: any) {
         toast({ variant: 'destructive', title: 'Error', description: error.message });
     } finally {
-        setIsLoading(false);
+        setIsResettingPassword(false);
     }
   };
   
@@ -135,8 +138,8 @@ export default function ForgotPasswordPage() {
                 />
               </CardContent>
               <CardFooter>
-                <Button className="w-full" type="submit" disabled={isLoading}>
-                  {isLoading ? <Loader2 className="animate-spin" /> : 'Send OTP'}
+                <Button className="w-full" type="submit" disabled={isSendingOtp}>
+                  {isSendingOtp ? <Loader2 className="animate-spin" /> : 'Send OTP'}
                 </Button>
               </CardFooter>
             </form>
@@ -161,6 +164,7 @@ export default function ForgotPasswordPage() {
                           pattern="[0-9]*"
                           placeholder="6-digit OTP"
                           {...field}
+                          disabled={isVerifyingOtp}
                         />
                       </FormControl>
                       <FormMessage />
@@ -169,8 +173,8 @@ export default function ForgotPasswordPage() {
                 />
               </CardContent>
               <CardFooter>
-                <Button className="w-full" type="submit" disabled={isLoading}>
-                   {isLoading ? <Loader2 className="animate-spin" /> : 'Verify OTP'}
+                <Button className="w-full" type="submit" disabled={isVerifyingOtp}>
+                   {isVerifyingOtp ? <Loader2 className="animate-spin" /> : 'Verify OTP'}
                 </Button>
               </CardFooter>
             </form>
@@ -196,8 +200,8 @@ export default function ForgotPasswordPage() {
                 />
               </CardContent>
               <CardFooter>
-                 <Button className="w-full" type="submit" disabled={isLoading}>
-                   {isLoading ? <Loader2 className="animate-spin" /> : 'Reset Password'}
+                 <Button className="w-full" type="submit" disabled={isResettingPassword}>
+                   {isResettingPassword ? <Loader2 className="animate-spin" /> : 'Reset Password'}
                 </Button>
               </CardFooter>
             </form>
