@@ -4,6 +4,7 @@ import { NextResponse } from 'next/server';
 import dbConnect, { isDbConfigured } from '@/lib/mongodb';
 import User from '@/models/User';
 import Otp from '@/models/Otp';
+import { sendOtpSms, isTwilioConfigured } from '@/lib/twilio';
 
 export async function POST(request: Request) {
     if (!isDbConfigured) {
@@ -30,7 +31,6 @@ export async function POST(request: Request) {
             }
         }
 
-
         const otp = Math.floor(100000 + Math.random() * 900000).toString();
         
         await Otp.findOneAndUpdate(
@@ -39,13 +39,16 @@ export async function POST(request: Request) {
             { upsert: true, new: true, setDefaultsOnInsert: true }
         );
 
-        // --- MOCK OTP SENDING ---
-        console.log(`\n\n--- FableFront OTP Service (For Development) ---`);
-        console.log(`OTP for ${phone}: ${otp}`);
-        console.log(`This will expire in 5 minutes.`);
-        console.log(`In a production app, this would be sent via a real SMS service.`);
-        console.log(`---------------------------------------------------\n\n`);
-        // -------------------------
+        if (isTwilioConfigured) {
+            await sendOtpSms(phone, otp);
+        } else {
+            // Fallback for development if Twilio is not configured
+            console.log(`\n\n--- FableFront OTP Service (For Development) ---`);
+            console.log(`OTP for ${phone}: ${otp}`);
+            console.log(`This will expire in 5 minutes.`);
+            console.log(`In a production app, this would be sent via a real SMS service.`);
+            console.log(`---------------------------------------------------\n\n`);
+        }
 
         return NextResponse.json({ message: 'OTP sent successfully.' });
     } catch (error: any) {
