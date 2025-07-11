@@ -1,5 +1,5 @@
 import mongoose, { Schema, Document, Types } from 'mongoose';
-import type { IAddress } from './User';
+import type { IAddress, IUser } from './User';
 
 export interface OrderItem {
   productId: string;
@@ -23,7 +23,7 @@ const AddressSchema: Schema = new Schema({
 
 export interface IOrder extends Document {
   _id: Types.ObjectId;
-  userId: Types.ObjectId;
+  userId: Types.ObjectId | Pick<IUser, 'name' | 'phone' | 'email'>;
   items: OrderItem[];
   totalAmount: number;
   status: 'Pending' | 'Out for Delivery' | 'Delivered' | 'Cancelled';

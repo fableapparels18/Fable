@@ -110,7 +110,10 @@ export async function getPendingOrders(): Promise<IOrder[]> {
     }
     try {
         await dbConnect();
-        const orders = await OrderModel.find({ status: { $in: ['Pending', 'Out for Delivery'] } }).sort({ createdAt: -1 }).lean();
+        const orders = await OrderModel.find({ status: { $in: ['Pending', 'Out for Delivery'] } })
+            .sort({ createdAt: -1 })
+            .populate('userId', 'name phone email')
+            .lean();
         return JSON.parse(JSON.stringify(orders));
     } catch (error: any) {
         handleDbError(error, 'getPendingOrders');
@@ -124,8 +127,11 @@ export async function getRecentCompletedOrders(): Promise<IOrder[]> {
     }
     try {
         await dbConnect();
-        // Fetch last 30 delivered orders
-        const orders = await OrderModel.find({ status: 'Delivered' }).sort({ updatedAt: -1 }).limit(30).lean();
+        const orders = await OrderModel.find({ status: 'Delivered' })
+            .sort({ updatedAt: -1 })
+            .limit(30)
+            .populate('userId', 'name phone email')
+            .lean();
         return JSON.parse(JSON.stringify(orders));
     } catch (error: any) {
         handleDbError(error, 'getRecentCompletedOrders');
@@ -140,8 +146,11 @@ export async function getRecentCancelledOrders(): Promise<IOrder[]> {
     }
     try {
         await dbConnect();
-        // Fetch last 30 cancelled orders
-        const orders = await OrderModel.find({ status: 'Cancelled' }).sort({ updatedAt: -1 }).limit(30).lean();
+        const orders = await OrderModel.find({ status: 'Cancelled' })
+            .sort({ updatedAt: -1 })
+            .limit(30)
+            .populate('userId', 'name phone email')
+            .lean();
         return JSON.parse(JSON.stringify(orders));
     } catch (error: any) {
         handleDbError(error, 'getRecentCancelledOrders');
