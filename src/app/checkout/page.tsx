@@ -168,6 +168,18 @@ export default function CheckoutPage() {
         fetchCheckoutData();
     }, []);
 
+    const cartIsEmpty = !cart || cart.items.length === 0;
+
+    useEffect(() => {
+        if (!isDataLoading && cartIsEmpty) {
+            const timer = setTimeout(() => {
+                router.push('/cart');
+            }, 2000);
+            return () => clearTimeout(timer); // Cleanup timer on unmount
+        }
+    }, [isDataLoading, cartIsEmpty, router]);
+
+
     const handlePlaceOrder = () => {
         if (!selectedAddress) {
             toast({ variant: 'destructive', title: 'No Address Selected', description: 'Please select or add a shipping address.' });
@@ -187,6 +199,7 @@ export default function CheckoutPage() {
                     throw new Error(data.message || 'Failed to place order.');
                 }
                 
+                const data = await res.json();
                 toast({
                     title: 'Order Placed Successfully!',
                     description: 'Thank you for your purchase. You can view your order in your profile.',
@@ -210,14 +223,11 @@ export default function CheckoutPage() {
         );
     }
     
-    if (!cart || cart.items.length === 0) {
+    if (cartIsEmpty) {
         return (
             <div className="container mx-auto px-4 py-12 text-center">
                 <h1 className="text-2xl font-bold">Your cart is empty.</h1>
                 <p className="mt-2 text-muted-foreground">Redirecting you back to the cart...</p>
-                {useEffect(() => {
-                    setTimeout(() => router.push('/cart'), 2000);
-                }, [router])}
             </div>
         )
     }
