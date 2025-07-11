@@ -1,14 +1,13 @@
 
 'use client';
 
-import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { ProductImageGallery } from '@/components/product-image-gallery';
 import { SizeSelector } from '@/components/size-selector';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
-import { Heart, ShoppingCart, Loader2 } from 'lucide-react';
-import { useState, useEffect } from 'react';
+import { Heart, ShoppingCart } from 'lucide-react';
+import { useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import type { Product } from '@/models/Product';
 import type { IFeedback } from '@/models/Feedback';
@@ -21,6 +20,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { formatDistanceToNow } from 'date-fns';
 import { Card, CardContent } from '@/components/ui/card';
+import { Loader2 } from 'lucide-react';
+import Link from 'next/link';
 
 
 function FeedbackForm({ productId, onFeedbackSubmitted, isLoggedIn }: { productId: string, onFeedbackSubmitted: () => void, isLoggedIn: boolean }) {
@@ -101,7 +102,7 @@ function FeedbackForm({ productId, onFeedbackSubmitted, isLoggedIn }: { productI
           </form>
         </Form>
         ) : (
-            <div className="text-center">
+             <div className="text-center">
                 <p className="text-muted-foreground mt-2">Please log in to leave a review.</p>
                 <Button asChild className="mt-4">
                     <Link href="/login">Log In</Link>
@@ -182,7 +183,7 @@ export function ProductClientPage({ productId, initialProduct: product, initialF
       
       if (!response.ok) {
         const errorData = await response.json();
-        if (response.status === 401) {
+         if (response.status === 401) {
             toast({
                 variant: 'destructive',
                 title: 'Please Log In',
@@ -199,12 +200,11 @@ export function ProductClientPage({ productId, initialProduct: product, initialF
         });
       }
 
-
     } catch (error: any) {
         toast({
             variant: 'destructive',
             title: 'Error',
-            description: error.message || 'Something went wrong. Please try again.',
+            description: error.message || 'An error occurred while adding to cart.',
         });
     } finally {
       setIsAdding(false);
