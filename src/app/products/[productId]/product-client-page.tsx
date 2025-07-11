@@ -22,7 +22,7 @@ import { formatDistanceToNow } from 'date-fns';
 import { Card, CardContent } from '@/components/ui/card';
 import { Loader2 } from 'lucide-react';
 import Link from 'next/link';
-import { getFeedbackByProductId } from '@/lib/data';
+import { getFeedbackForProduct } from './actions';
 
 
 function FeedbackForm({ productId, onFeedbackSubmitted, isLoggedIn }: { productId: string, onFeedbackSubmitted: () => void, isLoggedIn: boolean }) {
@@ -158,12 +158,12 @@ export function ProductClientPage({ productId, initialProduct: product, initialF
   const router = useRouter();
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
   const [isAdding, setIsAdding] = useState(false);
-  const [isBuying, setIsBuying] = useTransition();
+  const [isBuying, startBuying] = useTransition();
   const { toast } = useToast();
   const [feedback, setFeedback] = useState(initialFeedback);
 
   const refreshFeedback = async () => {
-      const updatedFeedback = await getFeedbackByProductId(productId);
+      const updatedFeedback = await getFeedbackForProduct(productId);
       setFeedback(updatedFeedback);
   }
   
@@ -232,7 +232,7 @@ export function ProductClientPage({ productId, initialProduct: product, initialF
       return;
     }
 
-    setIsBuying(async () => {
+    startBuying(async () => {
       try {
         const response = await fetch('/api/cart', {
           method: 'POST',
