@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -25,7 +26,7 @@ export function CheckoutButton() {
                 title: 'Order Placed!',
                 description: 'Thank you for your purchase. Your order is being processed.',
             });
-            router.push('/profile');
+            router.push('/profile/orders');
             router.refresh();
 
         } catch (error: any) {

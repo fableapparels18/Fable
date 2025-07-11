@@ -1,7 +1,8 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
-import { redirect, useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { CldImage } from 'next-cloudinary';
 import Link from 'next/link';
 import { format } from 'date-fns';
@@ -10,7 +11,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Loader2 } from 'lucide-react';
+import { ArrowLeft, Loader2, Home } from 'lucide-react';
 import Image from 'next/image';
 
 function OrderItem({ order }: { order: IOrder }) {
@@ -40,26 +41,38 @@ function OrderItem({ order }: { order: IOrder }) {
                 </div>
             </AccordionTrigger>
             <AccordionContent>
-                <div className="space-y-4">
-                    {order.items.map(item => (
-                        <div key={item.productId.toString() + item.size} className="flex items-center gap-4">
-                            <div className="relative h-20 w-20 flex-shrink-0">
-                                {hasCloudName ? (
-                                    <CldImage src={item.image} alt={item.name} fill crop="fill" gravity="auto" className="rounded-md object-cover" />
-                                ) : (
-                                    <Image src="https://placehold.co/80x80.png" alt={item.name} width={80} height={80} className="rounded-md object-cover" />
-                                )}
+                <div className="space-y-6">
+                    <div className="space-y-4">
+                        <h4 className="font-semibold">Items</h4>
+                        {order.items.map(item => (
+                            <div key={item.productId.toString() + item.size} className="flex items-center gap-4">
+                                <div className="relative h-20 w-20 flex-shrink-0">
+                                    {hasCloudName ? (
+                                        <CldImage src={item.image} alt={item.name} fill crop="fill" gravity="auto" className="rounded-md object-cover" />
+                                    ) : (
+                                        <Image src="https://placehold.co/80x80.png" alt={item.name} width={80} height={80} className="rounded-md object-cover" />
+                                    )}
+                                </div>
+                                <div className="flex-grow">
+                                    <Link href={`/products/${item.productId}`} className="font-semibold hover:underline">{item.name}</Link>
+                                    <p className="text-sm text-muted-foreground">Size: {item.size}</p>
+                                    <p className="text-sm text-muted-foreground">Quantity: {item.quantity}</p>
+                                </div>
+                                <div className="text-right font-medium">
+                                    ${item.price.toFixed(2)}
+                                </div>
                             </div>
-                            <div className="flex-grow">
-                                <Link href={`/products/${item.productId}`} className="font-semibold hover:underline">{item.name}</Link>
-                                <p className="text-sm text-muted-foreground">Size: {item.size}</p>
-                                <p className="text-sm text-muted-foreground">Quantity: {item.quantity}</p>
-                            </div>
-                            <div className="text-right font-medium">
-                                ${item.price.toFixed(2)}
-                            </div>
+                        ))}
+                    </div>
+                    <div>
+                        <h4 className="font-semibold">Shipping Address</h4>
+                        <div className="mt-2 text-sm text-muted-foreground">
+                            <p>{order.shippingAddress.line1}</p>
+                            {order.shippingAddress.line2 && <p>{order.shippingAddress.line2}</p>}
+                            <p>{order.shippingAddress.city}, {order.shippingAddress.state} {order.shippingAddress.zip}</p>
+                            <p>{order.shippingAddress.country}</p>
                         </div>
-                    ))}
+                    </div>
                 </div>
             </AccordionContent>
         </AccordionItem>
@@ -74,18 +87,26 @@ export default function MyOrdersPage() {
     useEffect(() => {
         const fetchOrders = async () => {
             setIsLoading(true);
-            const res = await fetch('/api/orders/user');
-            if (res.status === 401) {
-                redirect('/login');
+            try {
+                const res = await fetch('/api/orders/user');
+                if (res.status === 401) {
+                    router.push('/login');
+                    return;
+                }
+                if (res.ok) {
+                    const data = await res.json();
+                    setOrders(data);
+                } else {
+                    throw new Error('Failed to fetch orders');
+                }
+            } catch (error) {
+                // Handle toast notification if desired
+            } finally {
+                setIsLoading(false);
             }
-            if (res.ok) {
-                const data = await res.json();
-                setOrders(data);
-            }
-            setIsLoading(false);
         };
         fetchOrders();
-    }, []);
+    }, [router]);
 
     if (isLoading) {
         return (

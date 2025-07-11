@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -20,7 +21,7 @@ import { Loader2, PlusCircle } from 'lucide-react';
 import { AddressFormSchema, type AddressFormData } from '@/lib/schemas';
 import { addAddress } from '../actions';
 
-export function AddAddressDialog() {
+export function AddAddressDialog({ onAddressAdded }: { onAddressAdded?: () => void }) {
   const [isOpen, setIsOpen] = useState(false);
   const { toast } = useToast();
 
@@ -43,6 +44,7 @@ export function AddAddressDialog() {
       toast({ title: 'Success!', description: result.message });
       setIsOpen(false);
       form.reset();
+      onAddressAdded?.();
     } else {
       toast({ variant: 'destructive', title: 'Error', description: result.message });
     }
@@ -88,6 +90,19 @@ export function AddAddressDialog() {
                   <FormLabel>Address Line 1</FormLabel>
                   <FormControl>
                     <Input placeholder="123 Main St" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+             <FormField
+              control={form.control}
+              name="line2"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Address Line 2 (Optional)</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Apt, Suite, etc." {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

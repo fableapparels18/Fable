@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -7,10 +8,10 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Trash2, Minus, Plus } from 'lucide-react';
+import { Loader2, Trash2, Minus, Plus, ArrowRight } from 'lucide-react';
 import type { Product } from '@/models/Product';
-import { CheckoutButton } from '@/components/checkout-button';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 
 interface PopulatedCartItem {
   productId: Product;
@@ -26,6 +27,7 @@ export default function CartPage() {
   const [cart, setCart] = useState<CartData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
+  const router = useRouter();
   const hasCloudName = !!process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
 
   const fetchCart = async () => {
@@ -34,9 +36,8 @@ export default function CartPage() {
       const res = await fetch('/api/cart');
       if (!res.ok) {
         const errorData = await res.json();
-        // Redirect to login if unauthorized
         if (res.status === 401) {
-            window.location.href = '/login';
+            router.push('/login');
             return;
         }
         throw new Error(errorData.message || 'Failed to fetch cart');
@@ -186,14 +187,19 @@ export default function CartPage() {
               </div>
               <div className="flex justify-between text-muted-foreground">
                 <span>Shipping</span>
-                <span>Calculated at next step</span>
+                <span>Free</span>
               </div>
               <Separator />
               <div className="flex justify-between text-xl font-bold">
                 <span>Total</span>
                 <span>${subtotal.toFixed(2)}</span>
               </div>
-              <CheckoutButton />
+               <Button size="lg" className="w-full button-fill-up" asChild>
+                <Link href="/checkout">
+                    Proceed to Checkout
+                    <ArrowRight className="ml-2 h-5 w-5" />
+                </Link>
+            </Button>
             </CardContent>
           </Card>
         </div>
