@@ -1,9 +1,11 @@
 
+
 import { getProductById, getFeedbackByProductId } from '@/lib/data';
 import { notFound } from 'next/navigation';
 import { ProductClientPage } from './product-client-page';
 import { Suspense } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
+import { cookies } from 'next/headers';
 
 type ProductPageProps = {
   params: {
@@ -64,8 +66,12 @@ async function ProductPageContent({ productId }: { productId: string }) {
     if (!product) {
         notFound();
     }
+    
+    // Check login status on the server
+    const cookieStore = cookies();
+    const isLoggedIn = cookieStore.has('token');
 
-    return <ProductClientPage productId={productId} initialProduct={product} initialFeedback={feedback} />;
+    return <ProductClientPage productId={productId} initialProduct={product} initialFeedback={feedback} isLoggedIn={isLoggedIn} />;
 }
 
 export default function ProductPage({ params }: ProductPageProps) {

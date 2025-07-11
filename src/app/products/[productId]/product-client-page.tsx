@@ -23,7 +23,7 @@ import { formatDistanceToNow } from 'date-fns';
 import { Card, CardContent } from '@/components/ui/card';
 
 
-function FeedbackForm({ productId, onFeedbackSubmitted }: { productId: string, onFeedbackSubmitted: () => void }) {
+function FeedbackForm({ productId, onFeedbackSubmitted, isLoggedIn }: { productId: string, onFeedbackSubmitted: () => void, isLoggedIn: boolean }) {
   const { toast } = useToast();
   const form = useForm<FeedbackFormData>({
     resolver: zodResolver(FeedbackFormSchema),
@@ -34,6 +34,14 @@ function FeedbackForm({ productId, onFeedbackSubmitted }: { productId: string, o
   });
 
   const onSubmit = async (data: FeedbackFormData) => {
+    if (!isLoggedIn) {
+        toast({
+            variant: 'destructive',
+            title: 'Please Log In',
+            description: 'You must be logged in to leave a review.',
+        });
+        return;
+    }
     const result = await addFeedback(productId, data);
     if (result?.success) {
       toast({
@@ -57,6 +65,7 @@ function FeedbackForm({ productId, onFeedbackSubmitted }: { productId: string, o
     <Card>
       <CardContent className="p-6">
         <h3 className="text-xl font-semibold mb-4">Leave a Review</h3>
+        {isLoggedIn ? (
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             <FormField
@@ -91,6 +100,14 @@ function FeedbackForm({ productId, onFeedbackSubmitted }: { productId: string, o
             </Button>
           </form>
         </Form>
+        ) : (
+            <div className="text-center">
+                <p className="text-muted-foreground mt-2">Please log in to leave a review.</p>
+                <Button asChild className="mt-4">
+                    <Link href="/login">Log In</Link>
+                </Button>
+            </div>
+        )}
       </CardContent>
     </Card>
   );
@@ -130,20 +147,14 @@ type ProductClientPageProps = {
   productId: string;
   initialProduct: Product;
   initialFeedback: IFeedback[];
+  isLoggedIn: boolean;
 };
 
-export function ProductClientPage({ productId, initialProduct: product, initialFeedback: feedback }: ProductClientPageProps) {
+export function ProductClientPage({ productId, initialProduct: product, initialFeedback: feedback, isLoggedIn }: ProductClientPageProps) {
   const router = useRouter();
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
   const [isAdding, setIsAdding] = useState(false);
   const { toast } = useToast();
-  
-  useEffect(() => {
-    // Check if the auth cookie exists. No need to decode, just check for presence.
-    const token = document.cookie.split('; ').find(row => row.startsWith('token='));
-    setIsLoggedIn(!!token);
-  }, []);
   
   const handleAddToCart = async () => {
     if (!selectedSize) {
@@ -153,16 +164,6 @@ export function ProductClientPage({ productId, initialProduct: product, initialF
         description: 'Please select a size before adding to cart.',
       });
       return;
-    }
-
-    if (!isLoggedIn) {
-        toast({
-            variant: 'destructive',
-            title: 'Please Log In',
-            description: 'You must be logged in to add items to your cart.',
-        });
-        router.push('/login');
-        return;
     }
 
     setIsAdding(true);
@@ -181,28 +182,30 @@ export function ProductClientPage({ productId, initialProduct: product, initialF
       
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.message || 'Failed to add item to cart');
-      }
-
-      toast({
-        title: 'Success!',
-        description: `"${product.name}" has been added to your cart.`,
-      });
-
-    } catch (error: any) {
-        if(error.message.includes("Unauthorized")) {
-             toast({
+        if (response.status === 401) {
+            toast({
                 variant: 'destructive',
                 title: 'Please Log In',
                 description: 'You must be logged in to add items to your cart.',
             });
+            router.push('/login');
         } else {
-            toast({
-                variant: 'destructive',
-                title: 'Error',
-                description: error.message || 'Something went wrong. Please try again.',
-            });
+            throw new Error(errorData.message || 'Failed to add item to cart');
         }
+      } else {
+        toast({
+            title: 'Success!',
+            description: `"${product.name}" has been added to your cart.`,
+        });
+      }
+
+
+    } catch (error: any) {
+        toast({
+            variant: 'destructive',
+            title: 'Error',
+            description: error.message || 'Something went wrong. Please try again.',
+        });
     } finally {
       setIsAdding(false);
     }
@@ -268,19 +271,7 @@ export function ProductClientPage({ productId, initialProduct: product, initialF
             <FeedbackList feedback={feedback} />
         </div>
         <div className="md:col-span-1">
-            {isLoggedIn ? (
-                <FeedbackForm productId={productId} onFeedbackSubmitted={() => router.refresh()} />
-            ) : (
-                <Card>
-                    <CardContent className="p-6 text-center">
-                        <h3 className="text-lg font-semibold">Want to share your thoughts?</h3>
-                        <p className="text-muted-foreground mt-2">Please log in to leave a review.</p>
-                        <Button asChild className="mt-4">
-                            <Link href="/login">Log In</Link>
-                        </Button>
-                    </CardContent>
-                </Card>
-            )}
+            <FeedbackForm productId={productId} onFeedbackSubmitted={() => router.refresh()} isLoggedIn={isLoggedIn} />
         </div>
       </div>
     </div>
