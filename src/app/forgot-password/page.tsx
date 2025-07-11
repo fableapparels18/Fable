@@ -34,6 +34,7 @@ export default function ForgotPasswordPage() {
   const { toast } = useToast();
   const [stage, setStage] = useState<Stage>('phone');
   const [phone, setPhone] = useState('');
+  const [otp, setOtp] = useState('');
 
   const [isSendingOtp, setIsSendingOtp] = useState(false);
   const [isVerifyingOtp, setIsVerifyingOtp] = useState(false);
@@ -86,6 +87,7 @@ export default function ForgotPasswordPage() {
         const resData = await res.json();
         if (!res.ok) throw new Error(resData.message);
         
+        setOtp(data.otp);
         setStage('password');
         toast({ title: 'OTP Verified', description: 'Please enter your new password.' });
     } catch (error: any) {
@@ -97,7 +99,6 @@ export default function ForgotPasswordPage() {
 
   const handleResetPassword = async (data: z.infer<typeof NewPasswordSchema>) => {
     setIsResettingPassword(true);
-    const otp = otpForm.getValues('otp');
      try {
         const res = await fetch('/api/auth/reset-password', {
             method: 'POST',
@@ -130,7 +131,7 @@ export default function ForgotPasswordPage() {
                     <FormItem>
                       <Label>Phone Number</Label>
                       <FormControl>
-                        <Input placeholder="Enter your 10-digit phone number" {...field} />
+                        <Input placeholder="Enter your 10-digit phone number" {...field} disabled={isSendingOtp} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -192,7 +193,7 @@ export default function ForgotPasswordPage() {
                     <FormItem>
                       <Label>New Password</Label>
                        <FormControl>
-                        <Input type="password" placeholder="Enter your new password" {...field} />
+                        <Input type="password" placeholder="Enter your new password" {...field} disabled={isResettingPassword} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
