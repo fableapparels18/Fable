@@ -8,7 +8,7 @@ export function Footer() {
       <div className="container mx-auto grid grid-cols-1 gap-8 px-4 py-12 md:grid-cols-3 md:px-6">
         <div className="flex flex-col items-center gap-2 md:items-start">
           <Link href="/" className="font-headline text-2xl font-bold text-foreground">
-             <Image src="/logo.png" alt="Fable Logo" width={100} height={30} data-ai-hint="logo fable" />
+             <Image src="/images/logo.png" alt="Fable Logo" width={100} height={30} data-ai-hint="logo fable" />
           </Link>
           <p className="text-center md:text-left">Contemporary apparel for the modern storyteller.</p>
         </div>

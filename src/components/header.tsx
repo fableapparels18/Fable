@@ -58,7 +58,7 @@ export function Header() {
       <div className="container mx-auto flex h-16 max-w-7xl items-center justify-between px-4 md:px-6">
         <div className="flex items-center gap-6">
           <Link href="/" className="mr-6 flex items-center space-x-2">
-            <Image src="/logo.png" alt="Fable Logo" width={100} height={30} data-ai-hint="logo fable" />
+            <Image src="/images/logo.png" alt="Fable Logo" width={100} height={30} data-ai-hint="logo fable" />
           </Link>
           <nav className="hidden gap-6 md:flex">
             {navLinks.map((link) => (
@@ -142,7 +142,7 @@ export function Header() {
                 <SheetHeader>
                     <SheetTitle asChild>
                          <Link href="/" onClick={() => setSheetOpen(false)} className="flex items-center">
-                            <Image src="/logo.png" alt="Fable Logo" width={100} height={30} data-ai-hint="logo fable" />
+                            <Image src="/images/logo.png" alt="Fable Logo" width={100} height={30} data-ai-hint="logo fable" />
                         </Link>
                     </SheetTitle>
                 </SheetHeader>
