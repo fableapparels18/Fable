@@ -4,14 +4,15 @@ import jwt from 'jsonwebtoken';
 import dbConnect, { isDbConfigured } from '@/lib/mongodb';
 import Cart from '@/models/Cart';
 import Order from '@/models/Order';
+import User from '@/models/User';
 import type { UserPayload } from '@/lib/auth';
 
 async function getUserIdFromToken(): Promise<string | null> {
+    const cookieStore = cookies();
     if (!process.env.JWT_SECRET) {
       console.error('JWT_SECRET not defined');
       return null;
     }
-    const cookieStore = cookies();
     const token = cookieStore.get('token')?.value;
     if (!token) {
       return null;
@@ -26,7 +27,7 @@ async function getUserIdFromToken(): Promise<string | null> {
 }
 
 
-export async function POST() {
+export async function POST(request: Request) {
     if (!isDbConfigured) {
         return NextResponse.json({ message: 'Database not configured.' }, { status: 503 });
     }
@@ -38,10 +39,28 @@ export async function POST() {
     
     try {
         await dbConnect();
-        const cart = await Cart.findOne({ userId }).populate('items.productId');
+        const { addressId } = await request.json();
+
+        if (!addressId) {
+            return NextResponse.json({ message: 'Shipping address is required.' }, { status: 400 });
+        }
+
+        const [cart, user] = await Promise.all([
+            Cart.findOne({ userId }).populate('items.productId'),
+            User.findById(userId)
+        ]);
 
         if (!cart || cart.items.length === 0) {
             return NextResponse.json({ message: 'Your cart is empty' }, { status: 400 });
+        }
+        
+        if (!user) {
+            return NextResponse.json({ message: 'User not found' }, { status: 404 });
+        }
+
+        const shippingAddress = user.addresses.find(addr => addr._id.toString() === addressId);
+        if (!shippingAddress) {
+             return NextResponse.json({ message: 'Invalid shipping address selected.' }, { status: 400 });
         }
 
         const totalAmount = cart.items.reduce((acc, item) => {
@@ -63,6 +82,7 @@ export async function POST() {
             items: orderItems,
             totalAmount,
             status: 'Pending',
+            shippingAddress: shippingAddress.toObject(),
         });
 
         await newOrder.save();
