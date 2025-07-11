@@ -7,6 +7,15 @@ import bcrypt from 'bcryptjs';
 
 const JWT_SECRET = process.env.JWT_SECRET;
 
+// Helper to normalize phone number
+const normalizePhone = (phone: string): string => {
+  if (phone.startsWith('+')) {
+    return phone;
+  }
+  // Assuming Indian numbers if no country code is provided
+  return `+91${phone}`;
+};
+
 export async function POST(request: Request) {
   if (!isDbConfigured) {
     return NextResponse.json({ message: 'Database not configured. Authentication is disabled.' }, { status: 503 });
@@ -24,8 +33,10 @@ export async function POST(request: Request) {
     if (!phone || !password) {
       return NextResponse.json({ message: 'Phone number and password are required.' }, { status: 400 });
     }
+    
+    const normalizedPhone = normalizePhone(phone);
 
-    const user = await User.findOne({ phone }).select('+password');
+    const user = await User.findOne({ phone: normalizedPhone }).select('+password');
     if (!user || !user.password) {
       return NextResponse.json({ message: 'Invalid credentials.' }, { status: 401 });
     }
