@@ -27,32 +27,29 @@ async function Hero() {
   }
 
   return (
-    <section className="w-full bg-background text-foreground">
-      <div className="container mx-auto grid min-h-[60dvh] grid-cols-1 items-center gap-8 px-4 md:grid-cols-2 md:px-6 lg:min-h-[70dvh]">
-        <div className="space-y-6 text-center md:text-left">
-          <h1 className="font-headline text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl lg:text-7xl">
-            Fable
-          </h1>
-          <p className="font-headline text-lg text-muted-foreground md:text-xl">
-            {slogan}
-          </p>
-          <Button size="lg" asChild className="button-fill-up">
-            <Link href="/products">
-              Shop The Collection
-              <ArrowRight className="ml-2 h-5 w-5" />
-            </Link>
-          </Button>
-        </div>
-        <div className="relative hidden h-full max-h-[70vh] w-full items-center justify-center md:flex">
-          <Image
-            src="https://placehold.co/600x700.png"
-            alt="Fable Hero Image"
-            width={600}
-            height={700}
-            className="rounded-lg object-cover shadow-2xl"
-            data-ai-hint="fashion model"
-          />
-        </div>
+    <section className="relative w-full h-[60vh] md:h-[80vh] text-white">
+      <Image
+        src="/images/banner.jpg"
+        alt="Fable banner"
+        fill
+        className="object-cover object-center"
+        priority
+        data-ai-hint="fashion banner"
+      />
+      <div className="absolute inset-0 bg-black/50" />
+      <div className="relative z-10 flex flex-col items-center justify-center h-full text-center p-4">
+        <h1 className="font-headline text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl lg:text-7xl">
+          Fable
+        </h1>
+        <p className="font-headline text-lg md:text-xl mt-4 max-w-2xl">
+          {slogan}
+        </p>
+        <Button size="lg" asChild className="mt-8 button-fill-up bg-white text-black hover:bg-gray-200">
+          <Link href="/products">
+            Shop The Collection
+            <ArrowRight className="ml-2 h-5 w-5" />
+          </Link>
+        </Button>
       </div>
     </section>
   );
