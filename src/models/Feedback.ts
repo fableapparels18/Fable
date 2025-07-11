@@ -2,7 +2,7 @@ import mongoose, { Schema, Document, Types } from 'mongoose';
 
 export interface IFeedback extends Document {
   _id: Types.ObjectId;
-  productId: Types.ObjectId;
+  productId: string;
   userId: Types.ObjectId;
   userName: string;
   rating: number;
@@ -12,7 +12,7 @@ export interface IFeedback extends Document {
 }
 
 const FeedbackSchema: Schema = new Schema({
-  productId: { type: Schema.Types.ObjectId, ref: 'Product', required: true },
+  productId: { type: String, ref: 'Product', required: true },
   userId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
   userName: { type: String, required: true },
   rating: { type: Number, required: true, min: 1, max: 5 },

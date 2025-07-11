@@ -2,7 +2,7 @@ import mongoose, { Schema, Document, Types } from 'mongoose';
 import type { IAddress } from './User';
 
 export interface OrderItem {
-  productId: Types.ObjectId;
+  productId: string;
   name: string;
   image: string;
   size: string;
@@ -33,7 +33,7 @@ export interface IOrder extends Document {
 }
 
 const OrderItemSchema: Schema = new Schema({
-    productId: { type: Schema.Types.ObjectId, ref: 'Product', required: true },
+    productId: { type: String, ref: 'Product', required: true },
     name: { type: String, required: true },
     image: { type: String, required: true },
     size: { type: String, required: true },
