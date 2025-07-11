@@ -1,0 +1,118 @@
+'use client';
+
+import { CldImage } from 'next-cloudinary';
+import { format } from 'date-fns';
+import type { IOrder } from '@/models/Order';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { OrderActions } from './order-actions';
+import { Badge } from '@/components/ui/badge';
+
+
+function OrdersTable({ orders }: { orders: IOrder[] }) {
+    if (orders.length === 0) {
+        return <p className="text-muted-foreground text-center py-8">No orders found.</p>
+    }
+    
+    return (
+        <Table>
+            <TableHeader>
+                <TableRow>
+                    <TableHead>Order ID</TableHead>
+                    <TableHead>Date</TableHead>
+                    <TableHead>Items</TableHead>
+                    <TableHead className="text-right">Total</TableHead>
+                    <TableHead>Status</TableHead>
+                    <TableHead><span className="sr-only">Actions</span></TableHead>
+                </TableRow>
+            </TableHeader>
+            <TableBody>
+                {orders.map((order) => (
+                    <TableRow key={order._id.toString()}>
+                        <TableCell className="font-mono text-xs">{order._id.toString()}</TableCell>
+                        <TableCell>{format(new Date(order.createdAt), "dd MMM yyyy, h:mm a")}</TableCell>
+                        <TableCell>
+                            <div className="flex flex-col gap-2">
+                                {order.items.map(item => (
+                                    <div key={item.productId.toString() + item.size} className="flex items-center gap-2">
+                                        <div className="relative h-10 w-10 flex-shrink-0">
+                                            <CldImage src={item.image} alt={item.name} fill crop="fill" gravity="auto" className="rounded-sm object-cover" />
+                                        </div>
+                                        <div className="text-sm">
+                                            <p className="font-medium">{item.name}</p>
+                                            <p className="text-muted-foreground">Qty: {item.quantity} | Size: {item.size}</p>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </TableCell>
+                        <TableCell className="text-right font-medium">Rs {order.totalAmount.toFixed(2)}</TableCell>
+                        <TableCell>
+                             <Badge variant={
+                                order.status === 'Cancelled' ? 'destructive' :
+                                order.status === 'Delivered' ? 'default' :
+                                order.status === 'Pending' ? 'secondary' :
+                                'outline' // For 'Out for Delivery'
+                            }>{order.status}</Badge>
+                        </TableCell>
+                        <TableCell>
+                            {(order.status === 'Pending' || order.status === 'Out for Delivery') && <OrderActions orderId={order._id.toString()} />}
+                        </TableCell>
+                    </TableRow>
+                ))}
+            </TableBody>
+        </Table>
+    );
+}
+
+interface OrdersTabsProps {
+    pendingOrders: IOrder[];
+    completedOrders: IOrder[];
+    cancelledOrders: IOrder[];
+}
+
+export function OrdersTabs({ pendingOrders, completedOrders, cancelledOrders }: OrdersTabsProps) {
+    return (
+        <Tabs defaultValue="pending">
+            <TabsList className="grid w-full grid-cols-3">
+                <TabsTrigger value="pending">Pending Orders</TabsTrigger>
+                <TabsTrigger value="completed">Completed Orders</TabsTrigger>
+                <TabsTrigger value="cancelled">Cancelled Orders</TabsTrigger>
+            </TabsList>
+            <TabsContent value="pending">
+                <Card>
+                    <CardHeader>
+                        <CardTitle>Pending Orders</CardTitle>
+                        <CardDescription>These are orders that need to be processed.</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        <OrdersTable orders={pendingOrders} />
+                    </CardContent>
+                </Card>
+            </TabsContent>
+            <TabsContent value="completed">
+                    <Card>
+                    <CardHeader>
+                        <CardTitle>Recent Completed Orders</CardTitle>
+                        <CardDescription>The last 30 orders that have been delivered.</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        <OrdersTable orders={completedOrders} />
+                    </CardContent>
+                </Card>
+            </TabsContent>
+                <TabsContent value="cancelled">
+                    <Card>
+                    <CardHeader>
+                        <CardTitle>Recent Cancelled Orders</CardTitle>
+                        <CardDescription>The last 30 orders that have been cancelled.</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        <OrdersTable orders={cancelledOrders} />
+                    </CardContent>
+                </Card>
+            </TabsContent>
+        </Tabs>
+    );
+}
