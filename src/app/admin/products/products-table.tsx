@@ -62,7 +62,7 @@ export function ProductsTable({ products }: { products: Product[] }) {
                             </div>
                         </TableCell>
                         <TableCell>{product.category}</TableCell>
-                        <TableCell className="hidden md:table-cell">${product.price.toFixed(2)}</TableCell>
+                        <TableCell className="hidden md:table-cell">Rs {product.price.toFixed(2)}</TableCell>
                         <TableCell>
                             <DropdownMenu>
                                 <DropdownMenuTrigger asChild>

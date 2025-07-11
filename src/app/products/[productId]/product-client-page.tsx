@@ -7,7 +7,7 @@ import { SizeSelector } from '@/components/size-selector';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { Heart, ShoppingCart } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useTransition } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import type { Product } from '@/models/Product';
 import type { IFeedback } from '@/models/Feedback';
@@ -22,6 +22,7 @@ import { formatDistanceToNow } from 'date-fns';
 import { Card, CardContent } from '@/components/ui/card';
 import { Loader2 } from 'lucide-react';
 import Link from 'next/link';
+import { getFeedbackByProductId } from '@/lib/data';
 
 
 function FeedbackForm({ productId, onFeedbackSubmitted, isLoggedIn }: { productId: string, onFeedbackSubmitted: () => void, isLoggedIn: boolean }) {
@@ -153,12 +154,18 @@ type ProductClientPageProps = {
   isLoggedIn: boolean;
 };
 
-export function ProductClientPage({ productId, initialProduct: product, initialFeedback: feedback, isLoggedIn }: ProductClientPageProps) {
+export function ProductClientPage({ productId, initialProduct: product, initialFeedback, isLoggedIn }: ProductClientPageProps) {
   const router = useRouter();
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
   const [isAdding, setIsAdding] = useState(false);
-  const [isBuying, setIsBuying] = useState(false);
+  const [isBuying, setIsBuying] = useTransition();
   const { toast } = useToast();
+  const [feedback, setFeedback] = useState(initialFeedback);
+
+  const refreshFeedback = async () => {
+      const updatedFeedback = await getFeedbackByProductId(productId);
+      setFeedback(updatedFeedback);
+  }
   
   const handleAddToCart = async () => {
     if (!selectedSize) {
@@ -215,7 +222,7 @@ export function ProductClientPage({ productId, initialProduct: product, initialF
     }
   };
 
-  const handleBuyNow = async () => {
+  const handleBuyNow = () => {
     if (!selectedSize) {
       toast({
         variant: 'destructive',
@@ -225,44 +232,43 @@ export function ProductClientPage({ productId, initialProduct: product, initialF
       return;
     }
 
-    setIsBuying(true);
-    try {
-      const response = await fetch('/api/cart', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          productId: product._id,
-          size: selectedSize,
-          quantity: 1,
-        }),
-      });
+    setIsBuying(async () => {
+      try {
+        const response = await fetch('/api/cart', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            productId: product._id,
+            size: selectedSize,
+            quantity: 1,
+          }),
+        });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        if (response.status === 401) {
-            toast({
-                variant: 'destructive',
-                title: 'Please Log In',
-                description: 'You must be logged in to buy items.',
-                action: <Button onClick={() => router.push('/login')}>Login</Button>
-            });
+        if (!response.ok) {
+          const errorData = await response.json();
+          if (response.status === 401) {
+              toast({
+                  variant: 'destructive',
+                  title: 'Please Log In',
+                  description: 'You must be logged in to buy items.',
+                  action: <Button onClick={() => router.push('/login')}>Login</Button>
+              });
+          } else {
+              throw new Error(errorData.message || 'Failed to add item to cart');
+          }
         } else {
-            throw new Error(errorData.message || 'Failed to add item to cart');
+          router.push('/checkout');
         }
-      } else {
-        router.push('/checkout');
+      } catch (error: any) {
+        toast({
+          variant: 'destructive',
+          title: 'Error',
+          description: error.message || 'An error occurred.',
+        });
       }
-    } catch (error: any) {
-      toast({
-        variant: 'destructive',
-        title: 'Error',
-        description: error.message || 'An error occurred.',
-      });
-    } finally {
-      setIsBuying(false);
-    }
+    });
   };
 
   return (
@@ -272,7 +278,7 @@ export function ProductClientPage({ productId, initialProduct: product, initialF
         <div className="flex flex-col space-y-6">
           <div>
             <h1 className="font-headline text-4xl font-bold tracking-tight lg:text-5xl">{product.name}</h1>
-            <p className="mt-2 text-3xl font-medium text-foreground">${product.price.toFixed(2)}</p>
+            <p className="mt-2 text-3xl font-medium text-foreground">Rs {product.price.toFixed(2)}</p>
             <p className="mt-4 text-muted-foreground">{product.description}</p>
           </div>
           
@@ -326,7 +332,7 @@ export function ProductClientPage({ productId, initialProduct: product, initialF
             <FeedbackList feedback={feedback} />
         </div>
         <div className="md:col-span-1">
-            <FeedbackForm productId={productId} onFeedbackSubmitted={() => router.refresh()} isLoggedIn={isLoggedIn} />
+            <FeedbackForm productId={productId} onFeedbackSubmitted={refreshFeedback} isLoggedIn={isLoggedIn} />
         </div>
       </div>
     </div>

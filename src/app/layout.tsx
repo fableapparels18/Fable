@@ -6,7 +6,7 @@ import { Header } from '@/components/header';
 import { Footer } from '@/components/footer';
 
 export const metadata: Metadata = {
-  title: 'FableFront',
+  title: 'Fable',
   description: 'Contemporary apparel for the modern storyteller.',
 };
 

@@ -1,7 +1,7 @@
 // use server'
 
 /**
- * @fileOverview Generates a slogan for the FableFront brand.
+ * @fileOverview Generates a slogan for the Fable brand.
  *
  * - generateSlogan - A function that generates a slogan.
  * - GenerateSloganInput - The input type for the generateSlogan function.

@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Truck, Home, PlusCircle } from 'lucide-react';
+import { Loader2, Truck, Home } from 'lucide-react';
 import type { IAddress, IUser } from '@/models/User';
 import type { Product } from '@/models/Product';
 import { AddAddressDialog } from '@/app/profile/addresses/add-address-dialog';
@@ -93,7 +93,7 @@ function OrderSummary({ cart, total }: { cart: CartData | null, total: number })
                                 <p className="font-medium">{item.productId.name}</p>
                                 <p className="text-muted-foreground">Qty: {item.quantity} | Size: {item.size}</p>
                             </div>
-                            <p className="font-medium text-sm">${(item.productId.price * item.quantity).toFixed(2)}</p>
+                            <p className="font-medium text-sm">Rs {(item.productId.price * item.quantity).toFixed(2)}</p>
                         </div>
                     ))}
                 </div>
@@ -101,7 +101,7 @@ function OrderSummary({ cart, total }: { cart: CartData | null, total: number })
                  <div className="space-y-2">
                     <div className="flex justify-between">
                         <span>Subtotal</span>
-                        <span>${total.toFixed(2)}</span>
+                        <span>Rs {total.toFixed(2)}</span>
                     </div>
                      <div className="flex justify-between">
                         <span>Shipping</span>
@@ -110,7 +110,7 @@ function OrderSummary({ cart, total }: { cart: CartData | null, total: number })
                     <Separator />
                      <div className="flex justify-between font-bold text-lg">
                         <span>Total</span>
-                        <span>${total.toFixed(2)}</span>
+                        <span>Rs {total.toFixed(2)}</span>
                     </div>
                 </div>
             </CardContent>
@@ -164,11 +164,11 @@ export default function CheckoutPage() {
         }
     };
 
+    const cartIsEmpty = !cart || cart.items.length === 0;
+
     useEffect(() => {
         fetchCheckoutData();
     }, []);
-
-    const cartIsEmpty = !cart || cart.items.length === 0;
 
     useEffect(() => {
         if (!isDataLoading && cartIsEmpty) {

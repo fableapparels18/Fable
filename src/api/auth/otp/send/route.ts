@@ -46,7 +46,7 @@ export async function POST(request: Request) {
                 return NextResponse.json({ message: result.message }, { status: 500 });
             }
         } else {
-            console.log(`\n\n--- FableFront OTP Service (For Development) ---`);
+            console.log(`\n\n--- Fable OTP Service (For Development) ---`);
             console.log(`Twilio is not configured. OTP cannot be sent.`);
             console.log(`Please configure Twilio credentials in your .env file.`);
             console.log(`---------------------------------------------------\n\n`);

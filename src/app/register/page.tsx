@@ -34,7 +34,7 @@ export default function RegisterPage() {
       const data = await res.json();
       if (res.ok) {
         toast({
-          title: 'Welcome to FableFront!',
+          title: 'Welcome to Fable!',
           description: 'Your account has been created.',
         });
         router.push('/profile');
@@ -55,7 +55,7 @@ export default function RegisterPage() {
         <CardHeader>
           <CardTitle className="text-2xl">Create Your Account</CardTitle>
           <CardDescription>
-            Join the FableFront family and start your story.
+            Join the Fable family and start your story.
           </CardDescription>
         </CardHeader>
         <form onSubmit={handleCreateAccount}>

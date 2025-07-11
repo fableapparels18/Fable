@@ -19,7 +19,7 @@ async function Hero() {
   let slogan = 'Wear Your Story.';
   if (process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY) {
     try {
-      const sloganData = await generateSlogan({ brandName: 'Fable Apparels' });
+      const sloganData = await generateSlogan({ brandName: 'Fable' });
       slogan = sloganData.slogan || slogan;
     } catch (error) {
       console.error('Slogan generation failed, falling back to default slogan.', error);
@@ -31,7 +31,7 @@ async function Hero() {
       <div className="container mx-auto grid min-h-[60dvh] grid-cols-1 items-center gap-8 px-4 md:grid-cols-2 md:px-6 lg:min-h-[70dvh]">
         <div className="space-y-6 text-center md:text-left">
           <h1 className="font-headline text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl lg:text-7xl">
-            FableFront
+            Fable
           </h1>
           <p className="font-headline text-lg text-muted-foreground md:text-xl">
             {slogan}
@@ -46,7 +46,7 @@ async function Hero() {
         <div className="relative hidden h-full max-h-[70vh] w-full items-center justify-center md:flex">
           <Image
             src="https://placehold.co/600x700.png"
-            alt="FableFront Hero Image"
+            alt="Fable Hero Image"
             width={600}
             height={700}
             className="rounded-lg object-cover shadow-2xl"

@@ -46,7 +46,7 @@ function OrdersTable({ orders }: { orders: IOrder[] }) {
                                 ))}
                             </div>
                         </TableCell>
-                        <TableCell className="text-right font-medium">${order.totalAmount.toFixed(2)}</TableCell>
+                        <TableCell className="text-right font-medium">Rs {order.totalAmount.toFixed(2)}</TableCell>
                         <TableCell>
                              <Badge variant={
                                 order.status === 'Cancelled' ? 'destructive' :
