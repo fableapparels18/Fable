@@ -26,6 +26,7 @@ import Link from 'next/link';
 
 function FeedbackForm({ productId, onFeedbackSubmitted, isLoggedIn }: { productId: string, onFeedbackSubmitted: () => void, isLoggedIn: boolean }) {
   const { toast } = useToast();
+  const router = useRouter();
   const form = useForm<FeedbackFormData>({
     resolver: zodResolver(FeedbackFormSchema),
     defaultValues: {
@@ -40,6 +41,7 @@ function FeedbackForm({ productId, onFeedbackSubmitted, isLoggedIn }: { productI
             variant: 'destructive',
             title: 'Please Log In',
             description: 'You must be logged in to leave a review.',
+            action: <Button onClick={() => router.push('/login')}>Login</Button>
         });
         return;
     }
@@ -155,6 +157,7 @@ export function ProductClientPage({ productId, initialProduct: product, initialF
   const router = useRouter();
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
   const [isAdding, setIsAdding] = useState(false);
+  const [isBuying, setIsBuying] = useState(false);
   const { toast } = useToast();
   
   const handleAddToCart = async () => {
@@ -188,8 +191,8 @@ export function ProductClientPage({ productId, initialProduct: product, initialF
                 variant: 'destructive',
                 title: 'Please Log In',
                 description: 'You must be logged in to add items to your cart.',
+                action: <Button onClick={() => router.push('/login')}>Login</Button>
             });
-            router.push('/login');
         } else {
             throw new Error(errorData.message || 'Failed to add item to cart');
         }
@@ -198,6 +201,7 @@ export function ProductClientPage({ productId, initialProduct: product, initialF
             title: 'Success!',
             description: `"${product.name}" has been added to your cart.`,
         });
+        router.refresh();
       }
 
     } catch (error: any) {
@@ -208,6 +212,56 @@ export function ProductClientPage({ productId, initialProduct: product, initialF
         });
     } finally {
       setIsAdding(false);
+    }
+  };
+
+  const handleBuyNow = async () => {
+    if (!selectedSize) {
+      toast({
+        variant: 'destructive',
+        title: 'Uh oh!',
+        description: 'Please select a size first.',
+      });
+      return;
+    }
+
+    setIsBuying(true);
+    try {
+      const response = await fetch('/api/cart', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          productId: product._id,
+          size: selectedSize,
+          quantity: 1,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        if (response.status === 401) {
+            toast({
+                variant: 'destructive',
+                title: 'Please Log In',
+                description: 'You must be logged in to buy items.',
+                action: <Button onClick={() => router.push('/login')}>Login</Button>
+            });
+        } else {
+            throw new Error(errorData.message || 'Failed to add item to cart');
+        }
+      } else {
+        router.push('/checkout');
+      }
+    } catch (error: any) {
+      toast({
+        variant: 'destructive',
+        title: 'Error',
+        description: error.message || 'An error occurred.',
+      });
+    } finally {
+      setIsBuying(false);
     }
   };
 
@@ -232,12 +286,13 @@ export function ProductClientPage({ productId, initialProduct: product, initialF
           </div>
 
           <div className="flex items-center gap-4">
-            <Button size="lg" className="flex-1 button-fill-up" onClick={handleAddToCart} disabled={isAdding || !selectedSize}>
-              <ShoppingCart className="mr-2" /> 
+            <Button size="lg" className="flex-1 button-fill-up" onClick={handleAddToCart} disabled={isAdding || isBuying || !selectedSize}>
+              {isAdding ? <Loader2 className="mr-2 animate-spin" /> : <ShoppingCart className="mr-2" />}
               {isAdding ? 'Adding...' : 'Add to Cart'}
             </Button>
-            <Button size="lg" variant="secondary" className="flex-1 button-fill-up">
-              Buy Now
+            <Button size="lg" variant="secondary" className="flex-1 button-fill-up" onClick={handleBuyNow} disabled={isAdding || isBuying || !selectedSize}>
+               {isBuying && <Loader2 className="mr-2 animate-spin" />}
+               {isBuying ? 'Processing...' : 'Buy Now'}
             </Button>
             <Button size="icon" variant="outline">
               <Heart />
