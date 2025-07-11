@@ -37,7 +37,7 @@ function OrdersTable({ orders }: { orders: IOrder[] }) {
                                 {order.items.map(item => (
                                     <div key={item.productId.toString() + item.size} className="flex items-center gap-2">
                                         <div className="relative h-10 w-10 flex-shrink-0">
-                                            <CldImage src={item.image} alt={item.name} fill crop="fill" gravity="auto" className="rounded-sm object-cover" />
+                                            <CldImage src={item.image} alt={item.name} width={40} height={40} crop="fill" gravity="auto" className="rounded-sm object-cover" />
                                         </div>
                                         <div className="text-sm">
                                             <p className="font-medium">{item.name}</p>
