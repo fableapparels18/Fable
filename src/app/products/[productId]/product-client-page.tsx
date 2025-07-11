@@ -1,6 +1,7 @@
 
 'use client';
 
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { ProductImageGallery } from '@/components/product-image-gallery';
 import { SizeSelector } from '@/components/size-selector';
