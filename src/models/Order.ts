@@ -27,7 +27,7 @@ export interface IOrder extends Document {
   items: OrderItem[];
   totalAmount: number;
   status: 'Pending' | 'Out for Delivery' | 'Delivered' | 'Cancelled';
-  shippingAddress: Omit<IAddress, '_id'>,
+  shippingAddress: Omit<IAddress, '_id'>;
   createdAt: Date;
   updatedAt: Date;
 }
