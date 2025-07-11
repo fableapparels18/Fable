@@ -61,20 +61,31 @@ export default function CartPage() {
 
   const handleUpdateQuantity = async (productId: string, size: string, quantity: number) => {
     try {
-      const res = await fetch('/api/cart', {
-        method: quantity < 1 ? 'DELETE' : 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ productId, size, quantity }),
-      });
-      if (!res.ok) throw new Error('Failed to update quantity');
-      const data = await res.json();
-      setCart(data);
-    } catch (error) {
-      toast({
-        variant: 'destructive',
-        title: 'Error',
-        description: 'Could not update item quantity.',
-      });
+        let res;
+        if (quantity < 1) {
+            // Use the removeItem handler if quantity is zero or less
+            return handleRemoveItem(productId, size);
+        } else {
+             res = await fetch('/api/cart', {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ productId, size, quantity }),
+            });
+        }
+
+        if (!res.ok) {
+            const errorData = await res.json();
+            throw new Error(errorData.message || 'Failed to update quantity');
+        }
+
+        const data = await res.json();
+        setCart(data);
+    } catch (error: any) {
+        toast({
+            variant: 'destructive',
+            title: 'Error',
+            description: error.message || 'Could not update item quantity.',
+        });
     }
   };
 
