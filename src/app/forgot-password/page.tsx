@@ -30,6 +30,7 @@ export default function ForgotPasswordPage() {
   const { toast } = useToast();
   const [stage, setStage] = useState<Stage>('phone');
   const [isLoading, setIsLoading] = useState(false);
+  const [resetToken, setResetToken] = useState<string | null>(null);
 
   const form = useForm<FormData>({
     resolver: zodResolver(FormSchema),
@@ -61,13 +62,14 @@ export default function ForgotPasswordPage() {
         });
         const resData = await res.json();
         if (!res.ok) throw new Error(resData.message);
+        setResetToken(resData.resetToken);
         setStage('password');
         toast({ title: 'OTP Verified', description: 'Please enter your new password.' });
       } else if (stage === 'password') {
         const res = await fetch('/api/auth/reset-password', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ phone: data.phone, otp: data.otp, newPassword: data.password }),
+          body: JSON.stringify({ resetToken, newPassword: data.password }),
         });
         const resData = await res.json();
         if (!res.ok) throw new Error(resData.message);
@@ -159,7 +161,7 @@ export default function ForgotPasswordPage() {
 
             <CardFooter>
               <Button className="w-full" type="submit" disabled={isLoading}>
-                {isLoading && <Loader2 className="animate-spin" />}
+                {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 {stage === 'phone' && 'Send OTP'}
                 {stage === 'otp' && 'Verify OTP'}
                 {stage === 'password' && 'Reset Password'}
