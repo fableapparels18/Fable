@@ -1,3 +1,4 @@
+
 'use client';
 
 import { notFound, useRouter } from 'next/navigation';
@@ -344,7 +345,7 @@ function EditProductFormSkeleton() {
                      <Card>
                         <CardHeader>
                             <Skeleton className="h-6 w-1/2 rounded-md" />
-                        </Header>
+                        </CardHeader>
                          <CardContent className="grid gap-6">
                            <Skeleton className="h-10 w-full rounded-md" />
                            <Skeleton className="h-10 w-full rounded-md" />
@@ -353,7 +354,7 @@ function EditProductFormSkeleton() {
                      <Card>
                         <CardHeader>
                             <Skeleton className="h-6 w-1/2 rounded-md" />
-                        </Header>
+                        </CardHeader>
                          <CardContent className="grid gap-4">
                             <Skeleton className="h-10 w-full rounded-md" />
                              <Skeleton className="h-10 w-full rounded-md" />
@@ -364,7 +365,7 @@ function EditProductFormSkeleton() {
                      <Card>
                         <CardHeader>
                             <Skeleton className="h-6 w-1/2 rounded-md" />
-                        </Header>
+                        </CardHeader>
                          <CardContent className="grid gap-4">
                            <Skeleton className="h-16 w-full rounded-md" />
                            <Skeleton className="h-16 w-full rounded-md" />
