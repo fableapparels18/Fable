@@ -1,6 +1,7 @@
+
 'use client';
 
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 import {
   Select,
   SelectContent,
@@ -20,13 +21,14 @@ const sortOptions = [
 
 export function SortOptions() {
   const router = useRouter();
+  const pathname = usePathname();
   const searchParams = useSearchParams();
   const currentSort = searchParams.get('sort') || 'date-desc';
 
   const handleSortChange = (value: string) => {
-    const params = new URLSearchParams(searchParams);
+    const params = new URLSearchParams(searchParams.toString());
     params.set('sort', value);
-    router.push(`/products?${params.toString()}`, { scroll: false });
+    router.replace(`${pathname}?${params.toString()}`, { scroll: false });
   };
 
   return (

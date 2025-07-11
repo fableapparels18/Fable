@@ -1,6 +1,6 @@
+
 'use client';
 
-import { useMemo } from 'react';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import type { Product } from '@/models/Product';
 import { ProductCard } from '@/components/product-card';
@@ -16,8 +16,7 @@ export function ProductList({ initialProducts }: ProductListProps) {
     const pathname = usePathname();
     const searchParams = useSearchParams();
 
-    const selectedCategories = useMemo(() => searchParams.get('categories')?.split(',').filter(Boolean) || [], [searchParams]);
-    const sortOption = useMemo(() => searchParams.get('sort') || 'date-desc', [searchParams]);
+    const selectedCategories = searchParams.get('categories')?.split(',').filter(Boolean) || [];
 
     const handleCategoryChange = (category: string, checked: boolean) => {
         const params = new URLSearchParams(searchParams.toString());
@@ -37,30 +36,9 @@ export function ProductList({ initialProducts }: ProductListProps) {
             params.delete('categories');
         }
         
-        router.push(`${pathname}?${params.toString()}`, { scroll: false });
+        // Use router.replace to avoid adding to history stack for filter changes
+        router.replace(`${pathname}?${params.toString()}`, { scroll: false });
     };
-
-    const filteredAndSortedProducts = useMemo(() => {
-        let products = [...initialProducts];
-
-        if (selectedCategories.length > 0) {
-            products = products.filter(product => selectedCategories.includes(product.category));
-        }
-
-        products.sort((a, b) => {
-            switch (sortOption) {
-                case 'price-asc': return a.price - b.price;
-                case 'price-desc': return b.price - a.price;
-                case 'name-asc': return a.name.localeCompare(b.name);
-                case 'name-desc': return b.name.localeCompare(a.name);
-                case 'date-desc':
-                default:
-                    return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
-            }
-        });
-
-        return products;
-    }, [initialProducts, selectedCategories, sortOption]);
 
     return (
         <div className="space-y-8">
@@ -81,9 +59,9 @@ export function ProductList({ initialProducts }: ProductListProps) {
                 onCategoryChange={handleCategoryChange}
             />
 
-            {filteredAndSortedProducts.length > 0 ? (
+            {initialProducts.length > 0 ? (
                     <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                    {filteredAndSortedProducts.map(product => (
+                    {initialProducts.map(product => (
                         <ProductCard key={product._id} product={product} />
                     ))}
                 </div>

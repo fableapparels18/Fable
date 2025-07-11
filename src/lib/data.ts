@@ -42,12 +42,23 @@ export async function getNewProducts(): Promise<Product[]> {
   }
 }
 
-export async function getAllProducts(sort?: string): Promise<Product[]> {
+type GetAllProductsParams = {
+  sort?: string;
+  categories?: string[];
+}
+
+export async function getAllProducts({ sort, categories }: GetAllProductsParams = {}): Promise<Product[]> {
   if (!isDbConfigured) {
      return [];
   }
   try {
     await dbConnect();
+    
+    const filter: any = {};
+    if (categories && categories.length > 0) {
+      filter.category = { $in: categories };
+    }
+
     const sortOption: { [key: string]: 1 | -1 } = {};
     switch (sort) {
         case 'price-asc':
@@ -68,7 +79,7 @@ export async function getAllProducts(sort?: string): Promise<Product[]> {
             break;
     }
 
-    const products = await ProductModel.find({}).sort(sortOption).lean();
+    const products = await ProductModel.find(filter).sort(sortOption).lean();
     return JSON.parse(JSON.stringify(products));
   } catch (error: any) {
     handleDbError(error, 'getAllProducts');
