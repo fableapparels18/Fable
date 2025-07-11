@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -11,21 +12,17 @@ import { Loader2, Trash2, Upload } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { FormField, FormItem, FormMessage } from '@/components/ui/form';
 import { cn } from '@/lib/utils';
+import Image from 'next/image';
 
 export function ImageUploader() {
-  const { control, getValues, setValue, formState: { isSubmitting } } = useFormContext();
+  const { control, watch, setValue, formState: { isSubmitting } } = useFormContext();
   const { toast } = useToast();
   
-  const [imageUrls, setImageUrls] = useState<string[]>([]);
   const [isUploading, setIsUploading] = useState(false);
   const hasCloudName = !!process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
 
-  useEffect(() => {
-    const existingImages = getValues('images');
-    if (typeof existingImages === 'string' && existingImages) {
-      setImageUrls(existingImages.split(',').map(url => url.trim()).filter(Boolean));
-    }
-  }, [getValues]);
+  const imagesValue = watch('images');
+  const imageUrls = typeof imagesValue === 'string' && imagesValue ? imagesValue.split(',').map(url => url.trim()).filter(Boolean) : [];
   
   const updateFormValue = (urls: string[]) => {
       setValue('images', urls.join(', '), { shouldValidate: true, shouldDirty: true });
@@ -57,7 +54,6 @@ export function ImageUploader() {
 
       const { url } = await response.json();
       const newImageUrls = [...imageUrls, url];
-      setImageUrls(newImageUrls);
       updateFormValue(newImageUrls);
       
       toast({
@@ -81,7 +77,6 @@ export function ImageUploader() {
   
   const handleRemoveImage = (urlToRemove: string) => {
       const newImageUrls = imageUrls.filter(url => url !== urlToRemove);
-      setImageUrls(newImageUrls);
       updateFormValue(newImageUrls);
   }
 
@@ -158,7 +153,17 @@ export function ImageUploader() {
             </div>
         ) : (
             <div className="text-center text-muted-foreground border-2 border-dashed rounded-lg p-8">
-                <p>No images uploaded yet.</p>
+               {hasCloudName ? (
+                    <p>No images uploaded yet.</p>
+               ) : (
+                    <Image
+                        src="https://placehold.co/256x256.png"
+                        alt="Placeholder for uploaded images"
+                        width={256}
+                        height={256}
+                        className="mx-auto"
+                    />
+               )}
             </div>
         )}
       </CardContent>
