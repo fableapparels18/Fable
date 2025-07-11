@@ -47,7 +47,7 @@ export async function POST(request: Request) {
 
         const [cart, user] = await Promise.all([
             Cart.findOne({ userId }).populate('items.productId'),
-            User.findById(userId)
+            User.findById(userId) // Removed .lean() to get a full Mongoose document
         ]);
 
         if (!cart || cart.items.length === 0) {
@@ -82,7 +82,7 @@ export async function POST(request: Request) {
             items: orderItems,
             totalAmount,
             status: 'Pending',
-            shippingAddress: shippingAddress.toObject(),
+            shippingAddress: shippingAddress.toObject(), // .toObject() will now work correctly
         });
 
         await newOrder.save();
