@@ -14,18 +14,18 @@ export function Footer() {
         </div>
         <div className="flex flex-col items-center gap-2 md:items-start">
           <h3 className="font-headline text-lg font-semibold text-foreground">Contact Us</h3>
-          <a href="mailto:support@fable.com" className="flex items-center gap-2 hover:text-primary">
+          <a href="mailto:fableapparels@gmail.com" className="flex items-center gap-2 hover:text-primary">
             <Mail className="h-4 w-4" />
-            support@fable.com
+            fableapparels@gmail.com
           </a>
-          <a href="tel:+1234567890" className="flex items-center gap-2 hover:text-primary">
+          <a href="tel:+919932458933" className="flex items-center gap-2 hover:text-primary">
             <Phone className="h-4 w-4" />
-            +1 (234) 567-890
+            +91 99324 58933
           </a>
         </div>
         <div className="flex flex-col items-center gap-2 md:items-start">
           <h3 className="font-headline text-lg font-semibold text-foreground">Follow Us</h3>
-          <a href="#" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 hover:text-primary">
+          <a href="https://www.instagram.com/fable_apparels?igsh=bTk3cGVvbjFyNzdu" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 hover:text-primary">
             <Instagram className="h-4 w-4" />
             Instagram
           </a>

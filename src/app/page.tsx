@@ -10,10 +10,10 @@ import { ProductCarousel } from '@/components/product-carousel';
 import { ArrowRight } from 'lucide-react';
 
 const categories = [
-  { name: 'Oversized', href: '/products?categories=Oversized', image: '/images/oversized.jpg', hint: 'oversized tshirt' },
+  { name: 'Oversized', href: '/products?categories=Oversized', image: '/images/oversized.png', hint: 'oversized tshirt' },
   { name: 'Hoodies', href: '/products?categories=Hoodie', image: '/images/hoodies.jpg', hint: 'fashion hoodie' },
-  { name: 'Full Sleeves', href: '/products?categories=Full+Sleeves', image: '/images/full-sleeves.jpg', hint: 'long sleeve shirt' },
-  { name: 'Sweatshirts', href: '/products?categories=Sweatshirt', image: '/images/sweatshirts.jpg', hint: 'sweatshirt model' },
+  { name: 'Full Sleeves', href: '/products?categories=Full+Sleeves', image: '/images/fullsleeves.jpg', hint: 'long sleeve shirt' },
+  { name: 'Sweatshirts', href: '/products?categories=Sweatshirt', image: '/images/sweatshirt.jpg', hint: 'sweatshirt model' },
 ];
 
 async function Hero() {
