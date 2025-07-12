@@ -270,9 +270,23 @@ export function ProductClientPage({ productId, initialProduct: product, initialF
       }
     });
   };
+  
+  const ActionButtons = () => (
+    <>
+      <Button size="lg" className="flex-1 button-fill-up" onClick={handleAddToCart} disabled={isAdding || isBuying || !selectedSize}>
+        {isAdding ? <Loader2 className="mr-2 animate-spin" /> : <ShoppingCart className="mr-2" />}
+        {isAdding ? 'Adding...' : 'Add to Cart'}
+      </Button>
+      <Button size="lg" variant="secondary" className="flex-1 button-fill-up" onClick={handleBuyNow} disabled={isAdding || isBuying || !selectedSize}>
+          {isBuying && <Loader2 className="mr-2 animate-spin" />}
+          {isBuying ? 'Processing...' : 'Buy Now'}
+      </Button>
+    </>
+  )
 
   return (
-    <div className="container mx-auto max-w-6xl px-4 py-12 md:px-6">
+    <>
+    <div className="container mx-auto max-w-6xl px-4 py-12 md:px-6 mb-24 md:mb-0">
       <div className="grid gap-8 md:grid-cols-2 lg:gap-16">
         <ProductImageGallery images={product.images} productName={product.name} />
         <div className="flex flex-col space-y-6">
@@ -291,22 +305,15 @@ export function ProductClientPage({ productId, initialProduct: product, initialF
             />
           </div>
 
-          <div className="flex items-center gap-4">
-            <Button size="lg" className="flex-1 button-fill-up" onClick={handleAddToCart} disabled={isAdding || isBuying || !selectedSize}>
-              {isAdding ? <Loader2 className="mr-2 animate-spin" /> : <ShoppingCart className="mr-2" />}
-              {isAdding ? 'Adding...' : 'Add to Cart'}
-            </Button>
-            <Button size="lg" variant="secondary" className="flex-1 button-fill-up" onClick={handleBuyNow} disabled={isAdding || isBuying || !selectedSize}>
-               {isBuying && <Loader2 className="mr-2 animate-spin" />}
-               {isBuying ? 'Processing...' : 'Buy Now'}
-            </Button>
+          <div className="hidden md:flex items-center gap-4">
+            <ActionButtons />
             <Button size="icon" variant="outline">
               <Heart />
               <span className="sr-only">Add to Wishlist</span>
             </Button>
           </div>
 
-          <Separator />
+          <Separator className="hidden md:block" />
 
           <div className="space-y-4">
             <h3 className="text-lg font-semibold">Details</h3>
@@ -336,5 +343,13 @@ export function ProductClientPage({ productId, initialProduct: product, initialF
         </div>
       </div>
     </div>
+    
+    {/* Mobile Action Bar */}
+    <div className="md:hidden fixed bottom-0 left-0 right-0 z-40 border-t bg-background/95 p-4 backdrop-blur-sm">
+        <div className="flex items-center gap-4">
+            <ActionButtons />
+        </div>
+    </div>
+    </>
   );
 }

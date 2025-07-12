@@ -17,6 +17,12 @@ const navLinks = [
   { href: '#', label: 'New Releases' },
 ];
 
+const mobileNavLinks = [
+  ...navLinks,
+  { href: '/profile', label: 'Profile' },
+  { href: '/admin/dashboard', label: 'Admin' }
+]
+
 export function Header() {
   const router = useRouter();
   const [isSheetOpen, setSheetOpen] = useState(false);
@@ -148,7 +154,7 @@ export function Header() {
                 </SheetHeader>
                 <div className="flex flex-col h-full">
                     <nav className="mt-6 flex flex-col gap-4">
-                        {navLinks.map((link) => (
+                        {mobileNavLinks.map((link) => (
                         <motion.div key={link.label} className="relative">
                             <Link
                                 href={link.href}
@@ -161,18 +167,6 @@ export function Header() {
                         ))}
                     </nav>
                     <div className="mt-auto flex items-center gap-4 border-t pt-6">
-                        <Button variant="ghost" size="icon" className="w-auto px-2 justify-start gap-2" asChild>
-                            <Link href="/admin/dashboard" onClick={() => setSheetOpen(false)}>
-                                <Shield className="h-5 w-5" />
-                                <span>Admin</span>
-                            </Link>
-                        </Button>
-                        <Button variant="ghost" size="icon" className="w-auto px-2 justify-start gap-2" asChild>
-                            <Link href="/profile" onClick={() => setSheetOpen(false)}>
-                                <User className="h-5 w-5" />
-                                <span>Profile</span>
-                            </Link>
-                        </Button>
                         <Button variant="ghost" size="icon" className="w-auto px-2 justify-start gap-2" asChild>
                             <Link href="/cart" onClick={() => setSheetOpen(false)}>
                                 <ShoppingCart className="h-5 w-5" />
