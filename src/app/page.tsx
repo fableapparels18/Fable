@@ -10,14 +10,14 @@ import { ProductCarousel } from '@/components/product-carousel';
 import { ArrowRight } from 'lucide-react';
 
 const categories = [
-  { name: 'Oversized', href: '/products?categories=Oversized', image: '/images/oversized.png', hint: 'oversized tshirt' },
-  { name: 'Hoodies', href: '/products?categories=Hoodie', image: '/images/hoodies.jpg', hint: 'fashion hoodie' },
-  { name: 'Full Sleeves', href: '/products?categories=Full+Sleeves', image: '/images/fullsleeves.jpg', hint: 'long sleeve shirt' },
-  { name: 'Sweatshirts', href: '/products?categories=Sweatshirt', image: '/images/sweatshirt.jpg', hint: 'sweatshirt model' },
+  { name: 'Half Sleeves', href: '/products?categories=Half+Sleeves', image: '/images/half.png', hint: 'oversized tshirt' },
+  { name: 'Full Sleeves', href: '/products?categories=Full+Sleeves', image: '/images/full.png', hint: 'long sleeve shirt' },
+  { name: 'Hoodies', href: '/products?categories=Hoodie', image: '/images/hoodies.png', hint: 'fashion hoodie' },
+  { name: 'Sweatshirts', href: '/products?categories=Sweatshirt', image: '/images/sweatshirt.png', hint: 'sweatshirt model' },
 ];
 
 async function Hero() {
-  let slogan = 'Wear Your Story.';
+  let slogan = 'Only 10 people will ever wear this design. Be one of them.';
   if (process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY) {
     try {
       const sloganData = await generateSlogan({ brandName: 'Fable' });
@@ -30,7 +30,7 @@ async function Hero() {
   return (
     <section className="relative w-full h-[60vh] md:h-[80vh] text-white">
       <Image
-        src="/images/banner.jpg"
+        src="/images/banner.png"
         alt="Fable banner"
         fill
         className="object-cover object-center"
@@ -40,7 +40,7 @@ async function Hero() {
       <div className="absolute inset-0 bg-black/50" />
       <div className="relative z-10 flex flex-col items-center justify-center h-full text-center p-4">
         <h1 className="font-headline text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl lg:text-7xl">
-          Fable
+          You Blink, You Miss
         </h1>
         <p className="font-headline text-lg md:text-xl mt-4 max-w-2xl">
           {slogan}
