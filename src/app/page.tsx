@@ -1,6 +1,7 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
+import { motion } from 'framer-motion';
 
 import { generateSlogan } from '@/ai/flows/generate-slogan';
 import { getNewProducts, getTrendingProducts } from '@/lib/data';
@@ -8,10 +9,11 @@ import type { Product } from '@/models/Product';
 import { Button } from '@/components/ui/button';
 import { ProductCarousel } from '@/components/product-carousel';
 import { ArrowRight } from 'lucide-react';
+import { ProductCard } from '@/components/product-card';
 
 const categories = [
   { name: 'Half Sleeves', href: '/products?categories=Half+Sleeves', image: '/images/half.png', hint: 'oversized tshirt' },
-  { name: 'Full Sleeves', href: '/products?categories=Full+Sleeves', image: '/images/full.png', hint: 'long sleeve shirt' },
+  { name: 'Full Sleeves', href: '/products?categories=Full+Sleeves', image: '/images/fullsleev.png', hint: 'long sleeve shirt' },
   { name: 'Hoodies', href: '/products?categories=Hoodie', image: '/images/hoody.png', hint: 'fashion hoodie' },
   { name: 'Sweatshirts', href: '/products?categories=Sweatshirt', image: '/images/sweatshirt.png', hint: 'sweatshirt model' },
 ];
@@ -28,12 +30,12 @@ async function Hero() {
   }
 
   return (
-    <section className="relative w-full h-[80vh] md:h-[90vh] text-white">
+    <section className="relative w-full h-[calc(100vh-4rem)] text-white">
       <Image
         src="/images/banner.png"
         alt="Fable banner"
         fill
-        className="object-center"
+        className="object-cover"
         priority
         data-ai-hint="fashion banner"
       />
@@ -55,6 +57,43 @@ async function Hero() {
     </section>
   );
 }
+
+function TrendingProductsSection({ products }: { products: Product[] }) {
+  if (products.length < 3) {
+    return (
+      <ProductCarousel
+        title="Trending Now"
+        subtitle="Discover our most popular and talked-about pieces, loved by the community."
+        products={products}
+      />
+    );
+  }
+
+  return (
+    <div className="container mx-auto px-4 md:px-6">
+      <div className="mb-10 text-center">
+        <h2 className="font-headline text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">Trending Now</h2>
+        <p className="mt-3 max-w-2xl mx-auto text-muted-foreground md:text-lg">
+          Discover our most popular and talked-about pieces, loved by the community.
+        </p>
+      </div>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+        <motion.div
+            className="w-full h-full"
+            whileHover={{ scale: 1.05 }}
+            transition={{ type: "spring", stiffness: 300, damping: 20 }}
+        >
+          <ProductCard product={products[0]} />
+        </motion.div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+          <ProductCard product={products[1]} />
+          <ProductCard product={products[2]} />
+        </div>
+      </div>
+    </div>
+  );
+}
+
 
 function Categories() {
   return (
@@ -96,11 +135,7 @@ export default async function Home() {
     <div className="flex flex-col">
       <Hero />
       <section className="bg-muted/50 py-16 md:py-24">
-        <ProductCarousel 
-          title="Trending Now" 
-          subtitle="Discover our most popular and talked-about pieces, loved by the community."
-          products={trendingProducts} 
-        />
+        <TrendingProductsSection products={trendingProducts} />
       </section>
       <section className="py-16 md:py-24">
         <Categories />
