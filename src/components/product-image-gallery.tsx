@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect, useCallback } from 'react';
@@ -60,7 +61,7 @@ export function ProductImageGallery({ images, productName }: ProductImageGallery
                     />
                 </div>
             </div>
-             <div className="overflow-hidden">
+             <div className="overflow-hidden flex justify-center">
                 <div className="-ml-4 flex">
                     <div className="relative aspect-square w-20 flex-[0_0_5rem] cursor-pointer pl-4">
                         <div className="block h-full w-full overflow-hidden rounded-md">
@@ -91,7 +92,7 @@ export function ProductImageGallery({ images, productName }: ProductImageGallery
           ))}
         </div>
       </div>
-      <div className="overflow-hidden" ref={thumbCarouselRef}>
+      <div className="overflow-hidden flex justify-center" ref={thumbCarouselRef}>
         <div className="-ml-4 flex">
           {images.map((src, index) => (
             <div
