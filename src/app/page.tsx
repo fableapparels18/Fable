@@ -28,12 +28,12 @@ async function Hero() {
   }
 
   return (
-    <section className="relative w-full h-[60vh] md:h-[80vh] text-white">
+    <section className="relative w-full h-[80vh] md:h-[90vh] text-white">
       <Image
         src="/images/banner.png"
         alt="Fable banner"
         fill
-        className="object-contain object-center"
+        className="object-center"
         priority
         data-ai-hint="fashion banner"
       />
