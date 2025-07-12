@@ -11,7 +11,7 @@ import { ArrowRight } from 'lucide-react';
 
 const categories = [
   { name: 'Half Sleeves', href: '/products?categories=Half+Sleeves', image: '/images/half.png', hint: 'oversized tshirt' },
-  { name: 'Full Sleeves', href: '/products?categories=Full+Sleeves', image: '/images/fullsleev.png', hint: 'long sleeve shirt' },
+  { name: 'Full Sleeves', href: '/products?categories=Full+Sleeves', image: '/images/full.png', hint: 'long sleeve shirt' },
   { name: 'Hoodies', href: '/products?categories=Hoodie', image: '/images/hoodies.png', hint: 'fashion hoodie' },
   { name: 'Sweatshirts', href: '/products?categories=Sweatshirt', image: '/images/sweatshirt.png', hint: 'sweatshirt model' },
 ];
