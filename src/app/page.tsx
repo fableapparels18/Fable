@@ -36,11 +36,11 @@ async function Hero() {
         src="/images/banner.png"
         alt="Fable banner"
         fill
-        className=""
+        className="object-cover"
         priority
         data-ai-hint="fashion banner"
       />
-      <div className="absolute inset-0 bg-black/50 transition-colors duration-300 group-hover:bg-black/70" />
+      <div className="absolute inset-0 bg-black/50 transition-colors duration-300 group-hover:bg-black/60" />
       <div className="relative z-10 flex flex-col items-center justify-center h-full text-center p-4">
         <h1 className="font-headline text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl lg:text-7xl">
           You Blink, You Miss
@@ -60,15 +60,7 @@ async function Hero() {
 }
 
 function TrendingProductsSection({ products }: { products: Product[] }) {
-  if (products.length < 3) {
-    return (
-      <ProductCarousel
-        title="Trending Now"
-        subtitle="Discover our most popular and talked-about pieces, loved by the community."
-        products={products}
-      />
-    );
-  }
+  const topTrendingProduct = products[0];
 
   return (
     <div className="container mx-auto px-4 md:px-6">
@@ -76,18 +68,20 @@ function TrendingProductsSection({ products }: { products: Product[] }) {
         <div className="mb-10 text-center">
           <h2 className="font-headline text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">Trending Now</h2>
           <p className="mt-3 max-w-2xl mx-auto text-muted-foreground md:text-lg">
-            Discover our most popular and talked-about pieces, loved by the community.
+            Discover our most popular and talked-about piece, loved by the community.
           </p>
         </div>
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
-          <div className="w-full h-full">
-            <ProductCard product={products[0]} />
+        {topTrendingProduct ? (
+            <div className="flex justify-center">
+                <div className="w-full max-w-sm">
+                    <ProductCard product={topTrendingProduct} />
+                </div>
+            </div>
+        ) : (
+          <div className="text-center text-muted-foreground py-8">
+            <p>Trending products coming soon!</p>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-6">
-            <ProductCard product={products[1]} />
-            <ProductCard product={products[2]} />
-          </div>
-        </div>
+        )}
       </div>
     </div>
   );
