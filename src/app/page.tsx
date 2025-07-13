@@ -1,7 +1,6 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { motion } from 'framer-motion';
 
 import { generateSlogan } from '@/ai/flows/generate-slogan';
 import { getNewProducts, getTrendingProducts } from '@/lib/data';
@@ -10,6 +9,7 @@ import { Button } from '@/components/ui/button';
 import { ProductCarousel } from '@/components/product-carousel';
 import { ArrowRight } from 'lucide-react';
 import { ProductCard } from '@/components/product-card';
+import { Badge } from '@/components/ui/badge';
 
 const categories = [
   { name: 'Half Sleeves', href: '/products?categories=Half+Sleeves', image: '/images/half.png', hint: 'oversized tshirt' },
@@ -71,19 +71,28 @@ function TrendingProductsSection({ products }: { products: Product[] }) {
 
   return (
     <div className="container mx-auto px-4 md:px-6">
-      <div className="mb-10 text-center">
-        <h2 className="font-headline text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">Trending Now</h2>
-        <p className="mt-3 max-w-2xl mx-auto text-muted-foreground md:text-lg">
-          Discover our most popular and talked-about pieces, loved by the community.
-        </p>
-      </div>
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-stretch">
-        <div className="w-full h-full">
-          <ProductCard product={products[0]} />
+      <div className="border rounded-lg p-6 md:p-10">
+        <div className="mb-10 text-center">
+          <h2 className="font-headline text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">Trending Now</h2>
+          <p className="mt-3 max-w-2xl mx-auto text-muted-foreground md:text-lg">
+            Discover our most popular and talked-about pieces, loved by the community.
+          </p>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-6">
-          <ProductCard product={products[1]} />
-          <ProductCard product={products[2]} />
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+          <div className="w-full h-full relative">
+            <Badge className="absolute top-4 left-4 z-10">Trending</Badge>
+            <ProductCard product={products[0]} />
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-6">
+            <div className="relative">
+                <Badge className="absolute top-4 left-4 z-10">Trending</Badge>
+                <ProductCard product={products[1]} />
+            </div>
+            <div className="relative">
+                <Badge className="absolute top-4 left-4 z-10">Trending</Badge>
+                <ProductCard product={products[2]} />
+            </div>
+          </div>
         </div>
       </div>
     </div>
