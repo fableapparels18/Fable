@@ -1,3 +1,4 @@
+
 'use client';
 
 import { CldImage } from 'next-cloudinary';
@@ -7,6 +8,7 @@ import type { Product } from '@/models/Product';
 import { ShoppingCart } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { Badge } from './ui/badge';
 
 type ProductCardProps = {
   product: Product;
@@ -17,7 +19,10 @@ export function ProductCard({ product }: ProductCardProps) {
   
   return (
     <Card className="group flex h-full w-full flex-col overflow-hidden rounded-lg shadow-sm transition-all duration-300 hover:shadow-xl">
-      <CardHeader className="p-0">
+      <CardHeader className="p-0 relative">
+        {product.isTrending && (
+          <Badge className="absolute top-4 left-4 z-10">Trending</Badge>
+        )}
         <Link href={`/products/${product._id}`} className="aspect-[4/5] overflow-hidden">
           {hasCloudName && product.images.length > 0 ? (
               <CldImage

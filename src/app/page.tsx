@@ -79,19 +79,12 @@ function TrendingProductsSection({ products }: { products: Product[] }) {
           </p>
         </div>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
-          <div className="w-full h-full relative">
-            <Badge className="absolute top-4 left-4 z-10">Trending</Badge>
+          <div className="w-full h-full">
             <ProductCard product={products[0]} />
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-6">
-            <div className="relative">
-                <Badge className="absolute top-4 left-4 z-10">Trending</Badge>
-                <ProductCard product={products[1]} />
-            </div>
-            <div className="relative">
-                <Badge className="absolute top-4 left-4 z-10">Trending</Badge>
-                <ProductCard product={products[2]} />
-            </div>
+            <ProductCard product={products[1]} />
+            <ProductCard product={products[2]} />
           </div>
         </div>
       </div>
