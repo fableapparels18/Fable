@@ -14,7 +14,7 @@ import { Badge } from '@/components/ui/badge';
 
 const categories = [
   { name: 'Half Sleeves', href: '/products?categories=Half+Sleeves', image: '/images/half.png', hint: 'oversized tshirt' },
-  { name: 'Full Sleeves', href: '/products?categories=Full+Sleeves', image: '/images/fullsleev.npg', hint: 'long sleeve shirt' },
+  { name: 'Full Sleeves', href: '/products?categories=Full+Sleeves', image: '/images/full.png', hint: 'long sleeve shirt' },
   { name: 'Hoodies', href: '/products?categories=Hoodie', image: '/images/hoody.png', hint: 'fashion hoodie' },
   { name: 'Sweatshirts', href: '/products?categories=Sweatshirt', image: '/images/sweatshirt.png', hint: 'sweatshirt model' },
 ];
@@ -36,11 +36,11 @@ async function Hero() {
         src="/images/banner.png"
         alt="Fable banner"
         fill
-        className="object-contain"
+        className=""
         priority
         data-ai-hint="fashion banner"
       />
-      <div className="absolute inset-0 bg-black/50 transition-colors duration-300 group-hover:bg-black/60" />
+      <div className="absolute inset-0 bg-black/50 transition-colors duration-300 group-hover:bg-black/70" />
       <div className="relative z-10 flex flex-col items-center justify-center h-full text-center p-4">
         <h1 className="font-headline text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl lg:text-7xl">
           You Blink, You Miss
