@@ -10,7 +10,9 @@ export function Footer() {
           <Link href="/" className="font-headline text-2xl font-bold text-foreground">
              <Image src="/images/logo.png" alt="Fable Logo" width={100} height={30} data-ai-hint="logo fable" />
           </Link>
-          <p className="text-center md:text-left">Contemporary apparel for the modern storyteller.</p>
+          <p className="text-center md:text-left">
+            Fable Apparels is a homegrown clothing brand crafting limited-edition drops with just 10 pieces per design ever. No restocks. No second chances. Each tee is made for those who move fast, stand out, and wear their story with pride. Join the drop culture. Be the few.
+          </p>
         </div>
         <div className="flex flex-col items-center gap-2 md:items-start">
           <h3 className="font-headline text-lg font-semibold text-foreground">Contact Us</h3>

@@ -30,7 +30,7 @@ async function Hero() {
   }
 
   return (
-    <section className="relative w-full h-[calc(100vh-4rem)] text-white">
+    <section className="relative group w-full h-screen text-white">
       <Image
         src="/images/banner.png"
         alt="Fable banner"
@@ -39,7 +39,7 @@ async function Hero() {
         priority
         data-ai-hint="fashion banner"
       />
-      <div className="absolute inset-0 bg-black/50" />
+      <div className="absolute inset-0 bg-black/50 transition-colors duration-300 group-hover:bg-black/60" />
       <div className="relative z-10 flex flex-col items-center justify-center h-full text-center p-4">
         <h1 className="font-headline text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl lg:text-7xl">
           You Blink, You Miss
@@ -77,10 +77,12 @@ function TrendingProductsSection({ products }: { products: Product[] }) {
           Discover our most popular and talked-about pieces, loved by the community.
         </p>
       </div>
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+      <motion.div 
+        whileHover={{ scale: 1.02 }}
+        className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center"
+      >
         <motion.div
             className="w-full h-full"
-            whileHover={{ scale: 1.05 }}
             transition={{ type: "spring", stiffness: 300, damping: 20 }}
         >
           <ProductCard product={products[0]} />
@@ -89,7 +91,7 @@ function TrendingProductsSection({ products }: { products: Product[] }) {
           <ProductCard product={products[1]} />
           <ProductCard product={products[2]} />
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 }
