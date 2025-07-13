@@ -1,6 +1,7 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
+import { motion } from 'framer-motion';
 
 import { generateSlogan } from '@/ai/flows/generate-slogan';
 import { getNewProducts, getTrendingProducts } from '@/lib/data';
@@ -13,7 +14,7 @@ import { Badge } from '@/components/ui/badge';
 
 const categories = [
   { name: 'Half Sleeves', href: '/products?categories=Half+Sleeves', image: '/images/half.png', hint: 'oversized tshirt' },
-  { name: 'Full Sleeves', href: '/products?categories=Full+Sleeves', image: '/images/fullsleev.png', hint: 'long sleeve shirt' },
+  { name: 'Full Sleeves', href: '/products?categories=Full+Sleeves', image: '/images/fullsleev.npg', hint: 'long sleeve shirt' },
   { name: 'Hoodies', href: '/products?categories=Hoodie', image: '/images/hoody.png', hint: 'fashion hoodie' },
   { name: 'Sweatshirts', href: '/products?categories=Sweatshirt', image: '/images/sweatshirt.png', hint: 'sweatshirt model' },
 ];
