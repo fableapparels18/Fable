@@ -9,6 +9,9 @@ import { Footer } from '@/components/footer';
 export const metadata: Metadata = {
   title: 'Fable',
   description: 'Contemporary apparel for the modern storyteller.',
+  icons: {
+    icon: '/images/logo.png',
+  }
 };
 
 export default function RootLayout({
