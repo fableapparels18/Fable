@@ -30,7 +30,7 @@ async function Hero() {
   }
 
   return (
-    <section className="relative group w-full h-screen text-white">
+    <section className="relative group w-full h-[90vh] text-white">
       <Image
         src="/images/banner.png"
         alt="Fable banner"
@@ -77,21 +77,15 @@ function TrendingProductsSection({ products }: { products: Product[] }) {
           Discover our most popular and talked-about pieces, loved by the community.
         </p>
       </div>
-      <motion.div 
-        whileHover={{ scale: 1.02 }}
-        className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center"
-      >
-        <motion.div
-            className="w-full h-full"
-            transition={{ type: "spring", stiffness: 300, damping: 20 }}
-        >
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-stretch">
+        <div className="w-full h-full">
           <ProductCard product={products[0]} />
-        </motion.div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-6">
           <ProductCard product={products[1]} />
           <ProductCard product={products[2]} />
         </div>
-      </motion.div>
+      </div>
     </div>
   );
 }
@@ -136,13 +130,13 @@ export default async function Home() {
   return (
     <div className="flex flex-col">
       <Hero />
-      <section className="bg-muted/50 py-16 md:py-24">
+      <section id="trending" className="bg-muted/50 py-16 md:py-24">
         <TrendingProductsSection products={trendingProducts} />
       </section>
       <section className="py-16 md:py-24">
         <Categories />
       </section>
-      <section className="bg-background py-16 md:py-24">
+      <section id="new-releases" className="bg-background py-16 md:py-24">
         <ProductCarousel 
           title="New Releases" 
           subtitle="Fresh from our design studio. Be the first to wear the future of fashion."

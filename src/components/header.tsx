@@ -13,8 +13,8 @@ import Image from 'next/image';
 
 const navLinks = [
   { href: '/products', label: 'Shop' },
-  { href: '#', label: 'Trending' },
-  { href: '#', label: 'New Releases' },
+  { href: '/#trending', label: 'Trending' },
+  { href: '/#new-releases', label: 'New Releases' },
 ];
 
 const mobileNavLinks = [
