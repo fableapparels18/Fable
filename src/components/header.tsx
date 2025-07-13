@@ -113,6 +113,13 @@ export function Header() {
         </div>
 
         <div className="flex items-center gap-2 md:hidden">
+            <Button variant="ghost" size="icon" asChild>
+              <Link href="/cart">
+                <ShoppingCart className="h-6 w-6" />
+                <span className="sr-only">Cart</span>
+              </Link>
+            </Button>
+
             <Sheet key="search-sheet" open={isSearchOpen} onOpenChange={setSearchOpen}>
                 <SheetTrigger asChild>
                     <Button variant="ghost" size="icon">
@@ -166,14 +173,6 @@ export function Header() {
                         </motion.div>
                         ))}
                     </nav>
-                    <div className="mt-auto flex items-center gap-4 border-t pt-6">
-                        <Button variant="ghost" size="icon" className="w-auto px-2 justify-start gap-2" asChild>
-                            <Link href="/cart" onClick={() => setSheetOpen(false)}>
-                                <ShoppingCart className="h-5 w-5" />
-                                <span>Cart</span>
-                            </Link>
-                        </Button>
-                    </div>
                 </div>
             </SheetContent>
             </Sheet>
